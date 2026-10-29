@@ -1,0 +1,241 @@
+@model ProjectCK_65131559.Models.DienDan_BaiViet
+@{
+    ViewBag.Title = Model.TieuDe;
+    Layout = "~/Areas/User_65131559/Views/Shared/_LayoutUser.cshtml";
+    bool isOwner = Model.NguoiDung.TenDangNhap == User.Identity.Name;
+}
+
+<div class="container mx-auto max-w-4xl">
+    <!-- Breadcrumb -->
+    <nav class="flex text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
+        <a href="@Url.Action("Index")" class="hover:text-ntu-blue">Diễn đàn</a>
+        <i class="fas fa-chevron-right mx-2 text-xs self-center"></i>
+        <a href="@Url.Action("ChuyenMuc", new { id = Model.MaChuyenMuc })" class="hover:text-ntu-blue">@Model.DienDan_ChuyenMuc.TenChuyenMuc</a>
+        <i class="fas fa-chevron-right mx-2 text-xs self-center"></i>
+        <span class="text-gray-800 font-medium truncate max-w-[200px]">@Model.TieuDe</span>
+    </nav>
+
+    <div class="space-y-6">
+        <!-- Main Article -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 relative">
+            @if(Model.LaGhim == true) {
+                <div class="absolute top-0 right-10 flex flex-col items-center">
+                    <div class="bg-red-600 text-white p-2 rounded-b-lg shadow-lg">
+                        <i class="fas fa-thumbtack text-xl rotate-45"></i>
+                    </div>
+                </div>
+            }
+            
+            <div class="p-6 md:p-10">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-ntu-blue to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg transform rotate-3">
+                         @(Model.NguoiDung.HoTen != null && Model.NguoiDung.HoTen.Length > 0 ? Model.NguoiDung.HoTen.Substring(0, 1).ToUpper() : "?")
+                    </div>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-1 leading-tight">@Model.TieuDe</h1>
+                        <div class="flex items-center text-xs text-gray-400 gap-3 font-medium">
+                            <span class="flex items-center text-indigo-600">
+                                <i class="fas fa-user-circle mr-1.5"></i> @Model.NguoiDung.HoTen
+                                @if(Model.NguoiDung.VaiTro == "Admin") {
+                                    <span class="ml-1 px-1.5 py-0.5 bg-orange-100 text-orange-600 rounded text-[9px] font-bold uppercase tracking-tight">Quản trị viên</span>
+                                }
+                            </span>
+                            <span>&bull;</span>
+                            <span class="flex items-center"><i class="far fa-calendar-alt mr-1.5"></i> @(Model.NgayDang.HasValue ? Model.NgayDang.Value.ToString("dd/MM/yyyy HH:mm") : "---")</span>
+                            <span>&bull;</span>
+                            <span class="flex items-center"><i class="far fa-eye mr-1.5"></i> @(Model.LuotXem ?? 0) lượt xem</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="prose max-w-none text-gray-700 leading-relaxed text-base italic border-l-4 border-indigo-100 pl-6 mb-10 py-2 bg-indigo-50/30 rounded-r-xl">
+                    <!-- NoiDung could contain rich text, handle basic formatting if present -->
+                    @Html.Raw(Model.NoiDung.Replace("\n", "<br>"))
+                </div>
+
+                <div class="flex justify-between items-center pt-8 border-t border-gray-100">
+                    <div class="flex gap-4">
+                        <button onclick="scrollToReply()" class="flex items-center gap-2 text-sm font-bold text-ntu-blue hover:text-ntu-dark transition-colors px-4 py-2 bg-blue-50 rounded-full">
+                            <i class="fas fa-reply"></i> Trả lời
+                        </button>
+                        <a href="@Url.Action("Report", new { id = Model.MaBaiViet })" class="flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-red-500 transition-colors px-4 py-2 hover:bg-red-50 rounded-full">
+                             <i class="fas fa-flag"></i> Báo cáo
+                        </a>
+                    </div>
+                    
+                    @if (isOwner) {
+                        <div class="flex gap-2">
+                             <a href="@Url.Action("Edit", new { id = Model.MaBaiViet })" class="p-2 text-gray-400 hover:text-blue-600 transition-colors" title="Chỉnh sửa">
+                                 <i class="fas fa-edit"></i>
+                             </a>
+                             @if (Model.DienDan_BinhLuan == null || !Model.DienDan_BinhLuan.Any()) {
+                                 <button onclick="deletePost(@Model.MaBaiViet)" class="p-2 text-gray-400 hover:text-red-600 transition-colors" title="Xóa bài">
+                                     <i class="fas fa-trash-alt"></i>
+                                 </button>
+                             }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="space-y-6">
+            <h3 class="text-xl font-bold text-gray-900 px-2 flex items-center">
+                 <i class="fas fa-comments text-indigo-500 mr-3"></i> Phản hồi thảo luận
+            </h3>
+
+            @if (Model.DienDan_BinhLuan != null && Model.DienDan_BinhLuan.Any())
+            {
+                foreach (var comment in Model.DienDan_BinhLuan.OrderBy(c => c.NgayBinhLuan))
+                {
+                    <div class="bg-white rounded-2xl shadow-md p-6 border border-gray-100 transition-all hover:bg-gray-50/50 @(comment.NguoiDung.VaiTro == "Admin" ? "ring-2 ring-orange-400/30 border-orange-100" : "")">
+                        <div class="flex gap-4">
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ring-4 ring-white shadow-md @(comment.NguoiDung.VaiTro == "Admin" ? "bg-orange-500 text-white" : "bg-indigo-100 text-ntu-blue")">
+                                     @(comment.NguoiDung.HoTen != null && comment.NguoiDung.HoTen.Length > 0 ? comment.NguoiDung.HoTen.Substring(0, 1).ToUpper() : "?")
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-center mb-3">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-bold text-gray-900 text-sm">@comment.NguoiDung.HoTen</span>
+                                        @if(comment.NguoiDung.VaiTro == "Admin") {
+                                            <span class="px-1.5 py-0.5 bg-orange-600 text-white rounded text-[9px] font-bold uppercase tracking-wider">Quản trị viên</span>
+                                        }
+                                        <span class="text-[10px] text-gray-400 font-medium">@(comment.NgayBinhLuan.HasValue ? comment.NgayBinhLuan.Value.ToString("dd/MM/yyyy HH:mm") : "")</span>
+                                    </div>
+                                    <button onclick="quoteComment('@comment.NguoiDung.HoTen', '@comment.NoiDung.Replace("'", "\\'").Replace("\n", " ")')" class="text-[10px] font-bold text-blue-500 hover:text-blue-700 px-2 py-1 bg-blue-50 rounded flex items-center transition-all hover:shadow-sm">
+                                        <i class="fas fa-quote-left mr-1.5"></i> Trích dẫn
+                                    </button>
+                                </div>
+                                <div class="text-sm text-gray-600 leading-relaxed">
+                                    @Html.Raw(comment.NoiDung.Replace("\n", "<br>"))
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center py-10 bg-white/50 rounded-2xl border-2 border-dashed border-gray-200 text-gray-400 italic font-medium">
+                    Chưa có phản hồi nào. Hãy khởi đầu cuộc thảo luận!
+                </div>
+            }
+        </div>
+
+        <!-- Reply Form -->
+        @if (Model.TrangThai != "BiKhoa")
+        {
+            <div id="replySection" class="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100 mt-12 transition-all">
+                <h4 class="font-extrabold text-gray-900 mb-6 flex items-center uppercase tracking-tight text-lg">
+                    <i class="fas fa-paper-plane text-ntu-blue mr-3"></i> Viết phản hồi của bạn
+                </h4>
+                <div class="space-y-4">
+                    <div id="quotePreview" class="hidden mb-4 bg-gray-50 border-l-4 border-ntu-blue p-4 rounded-r-xl relative animate-in fade-in slide-in-from-left duration-300">
+                        <button onclick="clearQuote()" class="absolute -top-2 -right-2 w-6 h-6 bg-gray-400 text-white rounded-full hover:bg-gray-600 flex items-center justify-center shadow-lg transform active:scale-90 transition-all">
+                             <i class="fas fa-times text-[10px]"></i>
+                        </button>
+                        <p id="quoteText" class="text-xs text-gray-500 italic line-clamp-3 leading-relaxed"></p>
+                    </div>
+                    <textarea id="replyContent" rows="5" class="w-full px-4 py-4 rounded-xl border border-gray-300 focus:ring-4 focus:ring-ntu-blue/20 focus:border-ntu-blue transition-all outline-none text-sm placeholder-gray-400 shadow-inner" placeholder="Bắt đầu chia sẻ kiến thức hoặc ý kiến của bạn tại đây..."></textarea>
+                    <div class="flex justify-between items-center text-xs text-gray-400 px-2">
+                         <span>Hỗ trợ các định dạng cơ bản: in đậm **Bold**, in nghiêng *Italic*.</span>
+                         <button onclick="submitReply()" class="bg-ntu-blue text-white px-10 py-3.5 rounded-xl font-extrabold hover:bg-indigo-700 transition-all shadow-xl hover:shadow-indigo-500/30 transform hover:-translate-y-1 active:translate-y-0 active:scale-95">
+                             Gửi phản hồi <i class="fas fa-paper-plane ml-2"></i>
+                         </button>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="bg-red-50 border border-red-100 rounded-2xl p-8 text-center mt-12">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full text-red-600 mb-4 animate-bounce">
+                    <i class="fas fa-lock text-xl"></i>
+                </div>
+                <h4 class="font-bold text-red-800 text-lg mb-2">Chủ đề thảo luận đã bị khóa</h4>
+                <p class="text-red-500 text-sm italic">Quản trị viên đã khóa bài viết này. Bạn không thể đăng thêm bình luận mới.</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts {
+<script>
+    function scrollToReply() {
+        document.getElementById('replySection').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('replyContent').focus();
+    }
+
+    let currentQuote = "";
+
+    function quoteComment(author, content) {
+        currentQuote = "> " + author + ": " + content + "\n\n";
+        document.getElementById('quoteText').innerText = author + " đã viết: \"" + content + "\"";
+        document.getElementById('quotePreview').classList.remove('hidden');
+        scrollToReply();
+    }
+
+    function clearQuote() {
+        currentQuote = "";
+        document.getElementById('quotePreview').classList.add('hidden');
+    }
+
+    function submitReply() {
+        const content = document.getElementById('replyContent').value;
+        if (!content.trim()) {
+            alert("Vui lòng nhập nội dung phản hồi!");
+            return;
+        }
+
+        const fullContent = currentQuote + content;
+
+        const formData = new FormData();
+        formData.append('maBaiViet', '@Model.MaBaiViet');
+        formData.append('noiDung', fullContent);
+        
+        // Add CSRF
+        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+        if(token) formData.append('__RequestVerificationToken', token);
+
+        fetch('@Url.Action("Reply")', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(err => console.error(err));
+    }
+
+    function deletePost(id) {
+        if (!confirm('Bạn có chắc chắn muốn xóa bài viết này không? Hành động này không thể hoàn tác.')) return;
+
+        const formData = new FormData();
+        formData.append('id', id);
+        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+        if(token) formData.append('__RequestVerificationToken', token);
+
+        fetch('@Url.Action("Delete")', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = '@Url.Action("ChuyenMuc", new { id = Model.MaChuyenMuc })';
+            } else {
+                alert(data.message);
+            }
+        });
+    }
+</script>
+}
+@Html.AntiForgeryToken()

@@ -1,0 +1,68 @@
+@model ProjectCK_65131559.Models.DienDan_BaiViet
+@{
+    ViewBag.Title = "Bắt đầu chủ đề mới";
+    Layout = "~/Areas/User_65131559/Views/Shared/_LayoutUser.cshtml";
+}
+
+<div class="container mx-auto max-w-3xl">
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+        <div class="bg-gradient-to-r from-ntu-blue to-indigo-700 px-8 py-10">
+            <h2 class="text-3xl font-extrabold text-white flex items-center tracking-tight">
+                <i class="fas fa-feather-pointed mr-4 text-blue-200"></i>
+                Bắt đầu thảo luận mới
+            </h2>
+            <p class="text-blue-100 mt-2 text-sm italic font-medium">Chia sẻ kiến thức, thắc mắc hoặc thông tin hữu ích của bạn tại đây.</p>
+        </div>
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            <div class="p-8 md:p-12 space-y-8">
+                @Html.ValidationSummary(true, "", new { @class = "p-4 mb-4 text-xs font-bold text-red-800 rounded-xl bg-red-50 border border-red-100 shadow-sm" })
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-3">
+                        <label class="block text-sm font-extrabold text-gray-800 uppercase tracking-widest pl-1">Chuyên mục <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            @Html.DropDownList("MaChuyenMuc", null, "--- Chọn chuyên mục ---", new { @class = "w-full appearance-none px-5 py-4 rounded-2xl border border-gray-300 focus:ring-4 focus:ring-ntu-blue/20 focus:border-ntu-blue transition-all outline-none font-medium text-gray-700 bg-white shadow-sm" })
+                            <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-400">
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.MaChuyenMuc, "", new { @class = "text-[10px] font-bold text-red-500 mt-1 pl-1" })
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="block text-sm font-extrabold text-gray-800 uppercase tracking-widest pl-1">Tiêu đề thảo luận <span class="text-red-500">*</span></label>
+                    @Html.EditorFor(model => model.TieuDe, new { htmlAttributes = new { @class = "w-full px-5 py-4 rounded-2xl border border-gray-300 focus:ring-4 focus:ring-ntu-blue/20 focus:border-ntu-blue transition-all outline-none font-bold text-gray-800 placeholder-gray-400 shadow-sm", @placeholder = "VD: Hỏi về lịch mượn tài liệu ôn thi cao học?" } })
+                    @Html.ValidationMessageFor(model => model.TieuDe, "", new { @class = "text-[10px] font-bold text-red-500 mt-1 pl-1" })
+                </div>
+
+                <div class="space-y-3">
+                    <label class="block text-sm font-extrabold text-gray-800 uppercase tracking-widest pl-1">Nội dung bài đăng <span class="text-red-500">*</span></label>
+                    <div class="relative group">
+                        @Html.TextAreaFor(model => model.NoiDung, new { @class = "w-full px-5 py-5 rounded-3xl border border-gray-300 focus:ring-4 focus:ring-ntu-blue/20 focus:border-ntu-blue transition-all outline-none font-medium text-gray-700 placeholder-gray-400 shadow-inner", @rows = "10", @placeholder = "Mô tả chi tiết nội dung bạn muốn trao đổi..." })
+                        <!-- Simple Toolbar Mock -->
+                        <div class="absolute bottom-4 right-6 flex gap-3 text-gray-400 opacity-50 group-hover:opacity-100 transition-opacity">
+                            <i class="fas fa-bold cursor-help" title="Bold"></i>
+                            <i class="fas fa-italic cursor-help" title="Italic"></i>
+                            <i class="fas fa-link cursor-help" title="Link"></i>
+                        </div>
+                    </div>
+                    @Html.ValidationMessageFor(model => model.NoiDung, "", new { @class = "text-[10px] font-bold text-red-500 mt-1 pl-1" })
+                </div>
+
+                <div class="flex items-center justify-between pt-10 border-t border-gray-100">
+                    <a href="@Url.Action("Index")" class="text-gray-400 hover:text-gray-800 font-bold flex items-center transition-all bg-gray-50 px-5 py-3 rounded-xl hover:bg-gray-100">
+                        <i class="fas fa-arrow-left-long mr-3"></i>
+                        Quay lại
+                    </a>
+                    <button type="submit" class="bg-ntu-blue text-white px-10 py-4 rounded-2xl font-black hover:bg-indigo-700 transition-all shadow-2xl hover:shadow-indigo-500/40 transform hover:-translate-y-1 active:scale-95 flex items-center uppercase tracking-widest">
+                        Đăng bài ngay <i class="fas fa-paper-plane ml-3 text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</div>

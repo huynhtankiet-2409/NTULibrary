@@ -1,0 +1,101 @@
+﻿@model ProjectCK_65131559.Models.Forms.Login
+
+@{
+    ViewBag.Title = "Đăng nhập";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="min-h-screen flex items-start justify-center pt-20 pb-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full">
+        <!-- Card Container -->
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-ntu-dark to-ntu-light p-8 text-center">
+                <div class="bg-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-user-circle text-ntu-blue text-5xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-white">Đăng nhập</h2>
+                <p class="text-blue-100 mt-2">Thư viện số Đại học Nha Trang</p>
+            </div>
+
+            <!-- Form Body -->
+            <div class="p-8">
+                @using (Html.BeginForm("Login", "Account_65131559", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "space-y-6", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+
+
+                    <!-- Validation Summary -->
+                    if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>
+                                <div class="text-sm text-red-700">
+                                    @Html.ValidationSummary(false, "", new { @class = "font-medium" })
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+
+                    <!-- Username Field -->
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fas fa-user text-gray-500"></i>
+                            @Html.LabelFor(m => m.Username, new { @class = "text-sm font-semibold text-gray-700" })
+                        </div>
+                        @Html.TextBoxFor(m => m.Username, new { 
+                            @class = "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-ntu-blue focus:border-transparent transition-all duration-200",
+                            placeholder = "nhập tên đăng nhập của bạn",
+                            autocomplete = "username"
+                        })
+                        @Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-red-500 text-sm mt-1" })
+                    </div>
+
+                    <!-- Password Field -->
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fas fa-lock text-gray-500"></i>
+                            @Html.LabelFor(m => m.Password, new { @class = "text-sm font-semibold text-gray-700" })
+                        </div>
+                        @Html.PasswordFor(m => m.Password, new { 
+                            @class = "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-ntu-blue focus:border-transparent transition-all duration-200",
+                            placeholder = "nhập mật khẩu của bạn",
+                            autocomplete = "current-password"
+                        })
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-red-500 text-sm mt-1" })
+                    </div>
+
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            @Html.CheckBoxFor(m => m.RememberMe, new { @class = "h-4 w-4 text-ntu-blue focus:ring-ntu-light border-gray-300 rounded" })
+                            @Html.LabelFor(m => m.RememberMe, new { @class = "ml-2 block text-sm text-gray-700" })
+                        </div>
+                        <div>
+                            @Html.ActionLink("Quên mật khẩu?", "ForgotPassword", "Account_65131559", null, new { @class = "text-sm font-medium text-ntu-blue hover:text-ntu-dark transition-colors duration-200" })
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div>
+                        <button type="submit" class="w-full flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-gradient-to-r from-ntu-blue to-ntu-light hover:from-ntu-dark hover:to-ntu-blue focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ntu-blue transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                            <i class="fas fa-sign-in-alt mr-2"></i>
+                            Đăng nhập
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Back to Home -->
+        <div class="mt-6 text-center">
+            @Html.ActionLink("← Quay lại trang chủ", "Index", "Home_65131559", null, new { @class = "text-sm text-gray-600 hover:text-ntu-blue transition-colors duration-200" })
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

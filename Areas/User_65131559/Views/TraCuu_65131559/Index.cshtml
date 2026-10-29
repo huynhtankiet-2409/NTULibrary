@@ -1,0 +1,178 @@
+@model ProjectCK_65131559.Models.SearchViewModel_65131559
+@{
+    ViewBag.Title = "Tra cứu tài liệu";
+    Layout = Request.IsAuthenticated ? "~/Areas/User_65131559/Views/Shared/_LayoutUser.cshtml" : "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="flex flex-col lg:flex-row gap-8">
+    <!-- LEFT SIDEBAR: Filters -->
+    <aside class="w-full lg:w-1/4 flex-shrink-0">
+        <div class="bg-white rounded-lg shadow-md p-6 sticky top-24">
+            <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2 flex items-center">
+                <i class="fas fa-filter text-ntu-blue mr-2"></i> 
+                Bộ lọc tìm kiếm
+            </h3>
+            
+            @using (Html.BeginForm("Index", "TraCuu_65131559", FormMethod.Get, new { id = "filterForm" }))
+            {
+                <div class="space-y-4">
+                    <!-- Keyword -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Từ khóa</label>
+                        @Html.TextBoxFor(m => m.Keyword, new { @class = "w-full border-gray-300 rounded-md shadow-sm focus:ring-ntu-blue focus:border-ntu-blue", placeholder = "Tên tài liệu, tác giả..." })
+                    </div>
+
+                    <!-- Category -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Danh mục</label>
+                        @Html.DropDownListFor(m => m.SelectedMaDanhMuc, 
+                            new SelectList(Model.DanhMucCons, "MaDanhMucCon", "TenDanhMucCon"), 
+                            "-- Tất cả danh mục --", 
+                            new { @class = "w-full border-gray-300 rounded-md shadow-sm focus:ring-ntu-blue focus:border-ntu-blue" })
+                    </div>
+
+                    <!-- Publisher -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nhà xuất bản</label>
+                        @Html.DropDownListFor(m => m.SelectedMaNXB, 
+                            new SelectList(Model.NhaXuatBans, "MaNXB", "TenNXB"), 
+                            "-- Tất cả NXB --", 
+                            new { @class = "w-full border-gray-300 rounded-md shadow-sm focus:ring-ntu-blue focus:border-ntu-blue" })
+                    </div>
+
+                    <!-- Year -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Năm xuất bản</label>
+                        @Html.DropDownListFor(m => m.SelectedNamXB, 
+                            new SelectList(Model.NamXuatBans), 
+                            "-- Tất cả năm --", 
+                            new { @class = "w-full border-gray-300 rounded-md shadow-sm focus:ring-ntu-blue focus:border-ntu-blue" })
+                    </div>
+
+                    <button type="submit" class="w-full bg-ntu-blue text-white py-2 rounded-md hover:bg-ntu-dark transition-colors font-medium shadow">
+                        <i class="fas fa-search mr-2"></i>Tìm kiếm
+                    </button>
+                    
+                    <a href="@Url.Action("Index")" class="block w-full text-center text-sm text-gray-500 hover:text-gray-700 mt-2">
+                        Xóa bộ lọc
+                    </a>
+                </div>
+            }
+        </div>
+    </aside>
+
+    <!-- RIGHT MAIN CONTENT: Results -->
+    <div class="flex-1">
+        <div class="mb-6 flex justify-between items-center">
+            <h2 class="text-2xl font-bold text-gray-800">
+                Kết quả tìm kiếm
+                <span class="text-sm font-normal text-gray-500 ml-2">(@Model.Results.Count tài liệu được tìm thấy)</span>
+            </h2>
+        </div>
+
+        @if (Model.Results != null && Model.Results.Any())
+        {
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach (var item in Model.Results)
+                {
+                    <div class="bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group flex flex-col h-full">
+                        <!-- Cover Image -->
+                        <div class="relative h-48 bg-white rounded-t-xl overflow-hidden flex-shrink-0 p-3">
+                            @if (!string.IsNullOrEmpty(item.AnhBia))
+                            {
+                                <img src="@item.AnhBia" alt="@item.TenTaiLieu" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500">
+                            }
+                            else
+                            {
+                                <div class="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
+                                    <i class="fas fa-book-open text-4xl"></i>
+                                </div>
+                            }
+                        </div>
+                        
+                        <!-- Content -->
+                        <div class="p-4 flex flex-col flex-1">
+                            <div class="text-xs text-blue-600 font-semibold mb-1 uppercase tracking-wide">
+                                @(item.DanhMucCon != null ? item.DanhMucCon.TenDanhMucCon : "Tài liệu chung")
+                            </div>
+                            <h3 class="font-bold text-gray-800 text-lg mb-2 line-clamp-2 hover:text-ntu-blue transition-colors flex-1">
+                                <a href="@Url.Action("Details", new { id = item.MaTaiLieu })">@item.TenTaiLieu</a>
+                            </h3>
+                            
+                            <!-- Badges -->
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                @if(!string.IsNullOrEmpty(item.DinhDang)) {
+                                    <span class="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded border border-gray-200">@item.DinhDang</span>
+                                }
+                                @if(item.NamXuatBan.HasValue) {
+                                    <span class="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded border border-gray-200">@item.NamXuatBan</span>
+                                }
+                            </div>
+
+                            <div class="pt-3 mt-auto border-t border-gray-100 flex items-center justify-between">
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <span class="mr-3"><i class="fas fa-eye mr-1"></i>@item.LuotXem</span>
+                                    <span><i class="fas fa-download mr-1"></i>@item.LuotTai</span>
+                                </div>
+                                <a href="@Url.Action("Details", new { id = item.MaTaiLieu })" class="text-sm font-medium text-ntu-blue hover:underline">
+                                    Chi tiết <i class="fas fa-arrow-right list-none ml-1 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            
+            <!-- Pagination Controls -->
+            if (Model.TotalPages > 1)
+            {
+                <div class="mt-8 flex justify-center">
+                    <nav class="flex items-center space-x-2">
+                        <!-- Previous Button -->
+                        @if (Model.PageNumber > 1)
+                        {
+                            <a href="@Url.Action("Index", new { page = Model.PageNumber - 1, Keyword = Model.Keyword, SelectedMaDanhMuc = Model.SelectedMaDanhMuc, SelectedMaNXB = Model.SelectedMaNXB, SelectedNamXB = Model.SelectedNamXB })" 
+                               class="px-3 py-2 rounded-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 transition-colors">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        }
+
+                        <!-- Page Numbers -->
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            if (i == Model.PageNumber)
+                            {
+                                <span class="px-3 py-2 rounded-md bg-ntu-blue text-white font-medium border border-ntu-blue shadow-sm">@i</span>
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("Index", new { page = i, Keyword = Model.Keyword, SelectedMaDanhMuc = Model.SelectedMaDanhMuc, SelectedMaNXB = Model.SelectedMaNXB, SelectedNamXB = Model.SelectedNamXB })" 
+                                   class="px-3 py-2 rounded-md bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-ntu-blue transition-colors">@i</a>
+                            }
+                        }
+
+                        <!-- Next Button -->
+                        @if (Model.PageNumber < Model.TotalPages)
+                        {
+                            <a href="@Url.Action("Index", new { page = Model.PageNumber + 1, Keyword = Model.Keyword, SelectedMaDanhMuc = Model.SelectedMaDanhMuc, SelectedMaNXB = Model.SelectedMaNXB, SelectedNamXB = Model.SelectedNamXB })" 
+                               class="px-3 py-2 rounded-md bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 transition-colors">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        }
+                    </nav>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+                <div class="bg-gray-50 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-search text-gray-400 text-3xl"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Không tìm thấy kết quả</h3>
+                <p class="text-gray-500 max-w-sm mx-auto">Thử thay đổi từ khóa hoặc bộ lọc để tìm kiếm lại tài liệu bạn cần.</p>
+            </div>
+        }
+    </div>
+</div>
+

@@ -1,0 +1,137 @@
+@model ProjectCK_65131559.Models.PaginatedList<ProjectCK_65131559.Models.TacGia>
+
+@{
+    ViewBag.Title = "Quản lý Tác Giả";
+    Layout = "~/Areas/Admin_65131559/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="space-y-6">
+    <!-- Success Message -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-lg shadow-sm">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle text-green-500 text-xl mr-3"></i>
+                <p class="text-green-700 font-medium">@TempData["SuccessMessage"]</p>
+            </div>
+        </div>
+    }
+
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                    <i class="fas fa-pen-nib text-ntu-blue mr-3"></i>
+                    Quản lý Tác Giả
+                </h2>
+                <p class="text-gray-600 mt-1">Danh sách tác giả trong hệ thống</p>
+            </div>
+            <a href="@Url.Action("Create")" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                <i class="fas fa-plus-circle mr-2"></i>
+                Thêm tác giả
+            </a>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gradient-to-r from-blue-600 to-indigo-600">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">Họ Tên</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">Giới Thiệu</th>
+                        <th class="px-6 py-4 text-right text-xs font-semibold text-white uppercase tracking-wider">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @foreach (var item in Model)
+                    {
+                        <tr class="hover:bg-gray-50 transition-colors duration-150">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 font-bold mr-3">
+                                        @item.HoTen.Substring(0, 1).ToUpper()
+                                    </div>
+                                    <div class="text-sm font-semibold text-gray-900">@item.HoTen</div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-gray-700 max-w-lg truncate">
+                                    @item.GioiThieu
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right">
+                                <div class="flex justify-end items-center space-x-2">
+                                    <a href="@Url.Action("Edit", new { id = item.MaTacGia })" 
+                                       class="text-blue-600 hover:text-blue-800 transition-colors" 
+                                       title="Chỉnh sửa">
+                                        <i class="fas fa-edit text-lg"></i>
+                                    </a>
+                                    <a href="@Url.Action("Delete", new { id = item.MaTacGia })" 
+                                       class="text-red-600 hover:text-red-800 transition-colors" 
+                                       title="Xóa">
+                                        <i class="fas fa-trash text-lg"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        @if (!Model.Any())
+        {
+            <div class="text-center py-12">
+                <i class="fas fa-user-slash text-6xl text-gray-300 mb-4"></i>
+                <p class="text-gray-500 text-lg">Chưa có tác giả nào</p>
+            </div>
+        }
+    </div>
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4 rounded-lg shadow-sm">
+            <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-gray-700">
+                        Hiển thị trang <span class="font-medium">@Model.PageIndex</span> / <span class="font-medium">@Model.TotalPages</span>
+                    </p>
+                </div>
+                <div>
+                    <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                        @if (Model.HasPreviousPage)
+                        {
+                            <a href="@Url.Action("Index", new { page = Model.PageIndex - 1 })" class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                                <span class="sr-only">Previous</span>
+                                <i class="fas fa-chevron-left h-5 w-5"></i>
+                            </a>
+                        }
+
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            if (i == Model.PageIndex)
+                            {
+                                <span class="relative z-10 inline-flex items-center bg-blue-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">@i</span>
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("Index", new { page = i })" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">@i</a>
+                            }
+                        }
+
+                        @if (Model.HasNextPage)
+                        {
+                            <a href="@Url.Action("Index", new { page = Model.PageIndex + 1 })" class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                                <span class="sr-only">Next</span>
+                                <i class="fas fa-chevron-right h-5 w-5"></i>
+                            </a>
+                        }
+                    </nav>
+                </div>
+            </div>
+        </div>
+    }
+</div>

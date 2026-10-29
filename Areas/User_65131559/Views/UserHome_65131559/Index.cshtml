@@ -1,0 +1,102 @@
+﻿@model ProjectCK_65131559.Models.HomeViewModel_65131559
+@{
+    ViewBag.Title = "Trang chủ";
+    Layout = "~/Areas/User_65131559/Views/Shared/_LayoutUser.cshtml";
+}
+
+<div class="space-y-8">
+    
+    <!-- TRENDING DOCUMENTS (Grid) -->
+    @if (Model.TrendingDocuments != null && Model.TrendingDocuments.Any())
+    {
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center border-b pb-3">
+                <i class="fas fa-fire text-red-500 mr-2"></i>
+                Tài liệu Nổi bật
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach (var item in Model.TrendingDocuments)
+                {
+                    var totalViews = (item.LuotXem ?? 0) + (item.LuotTai ?? 0);
+                    <div class="bg-white p-5 rounded-xl shadow-md border-l-4 border-red-500 hover:shadow-xl transition-all duration-300 flex gap-4 items-start group">
+                        <div class="w-20 h-28 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden shadow-inner">
+                            @if(!string.IsNullOrEmpty(item.AnhBia)) {
+                                <img src="@item.AnhBia" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
+                            } else {
+                                <div class="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
+                                    <i class="fas fa-book text-3xl"></i>
+                                </div>
+                            }
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-gray-800 text-lg line-clamp-2 md:line-clamp-1 mb-1 group-hover:text-blue-600 transition-colors">@item.TenTaiLieu</h3>
+                            <p class="text-sm text-gray-500 mb-2">
+                                <i class="fas fa-folder-open mr-1 text-gray-400"></i>
+                                @(item.DanhMucCon != null ? item.DanhMucCon.TenDanhMucCon : "Chưa phân loại")
+                            </p>
+                            <div class="flex items-center gap-3 text-xs font-semibold">
+                                <span class="text-orange-600 bg-orange-50 px-2 py-1 rounded-full border border-orange-100">
+                                    <i class="fas fa-fire mr-1"></i> @totalViews tương tác
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- NEW ARRIVALS (Grid) -->
+    <div>
+        <div class="flex items-center justify-between mb-6 border-b pb-3">
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-clock text-blue-600 mr-2"></i>
+                Tài liệu Mới nhất
+            </h2>
+            <a href="@Url.Action("Index", "TraCuu_65131559")" class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors">Xem tất cả &rarr;</a>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            @if (Model.NewArrivals != null && Model.NewArrivals.Any())
+            {
+                foreach (var item in Model.NewArrivals)
+                {
+                    <div class="bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group flex flex-col h-full">
+                        <!-- Cover Image -->
+                        <div class="relative h-56 bg-gray-100 rounded-t-xl overflow-hidden flex-shrink-0">
+                            @if (!string.IsNullOrEmpty(item.AnhBia))
+                            {
+                                <img src="@item.AnhBia" alt="@item.TenTaiLieu" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500">
+                            }
+                            else
+                            {
+                                <div class="w-full h-full flex items-center justify-center bg-gray-50 md:bg-gray-100">
+                                    <i class="fas fa-book text-4xl text-gray-300"></i>
+                                </div>
+                            }
+                            <div class="absolute top-2 right-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow tracking-wider uppercase">
+                                New
+                            </div>
+                        </div>
+                        
+                        <!-- Content -->
+                        <div class="p-4 flex flex-col flex-1">
+                            <div class="text-xs text-gray-500 mb-1 font-medium">
+                                @(item.DanhMucCon != null ? item.DanhMucCon.TenDanhMucCon : "Chưa phân loại")
+                            </div>
+                            <h3 class="font-bold text-gray-800 text-sm mb-2 line-clamp-2 leading-snug group-hover:text-blue-600 transition-colors flex-1" title="@item.TenTaiLieu">
+                                @item.TenTaiLieu
+                            </h3>
+                            
+                            <div class="flex items-center justify-between mt-3 text-xs text-gray-400 pt-3 border-t border-gray-50">
+                                <span class="flex items-center" title="Lượt xem"><i class="fas fa-eye mr-1.5"></i>@(item.LuotXem ?? 0)</span>
+                                <span class="flex items-center" title="Lượt tải"><i class="fas fa-download mr-1.5"></i>@(item.LuotTai ?? 0)</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+</div>

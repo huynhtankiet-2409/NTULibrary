@@ -1,0 +1,224 @@
+﻿@model ProjectCK_65131559.Models.TaiLieu
+
+@{
+    ViewBag.Title = "Thêm Tài Liệu Mới";
+    Layout = "~/Areas/Admin_65131559/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="max-w-5xl mx-auto space-y-6">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+            <i class="fas fa-file-upload text-ntu-blue mr-3"></i>
+            Thêm Tài Liệu Mới
+        </h2>
+        <p class="text-gray-600 mt-2">Nhập thông tin và metadata của tài liệu</p>
+    </div>
+
+    <!-- Form -->
+    <div class="bg-white rounded-lg shadow-md p-8">
+        @using (Html.BeginForm("Create", "TaiLieu_65131559", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "bg-red-50 border-l-4 border-red-500 p-4 mb-6 text-red-700" })
+
+            <!-- Section 1: Thông tin cơ bản -->
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b-2 border-blue-500">
+                    <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                    Thông tin cơ bản
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Tên tài liệu -->
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-heading mr-1"></i> Tên tài liệu <span class="text-red-500">*</span>
+                        </label>
+                        @Html.TextBoxFor(model => model.TenTaiLieu, new { @class = "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder = "Nhập tên tài liệu" })
+                        @Html.ValidationMessageFor(model => model.TenTaiLieu, "", new { @class = "text-red-500 text-sm mt-1" })
+                    </div>
+
+                    <!-- ISBN -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-barcode mr-1"></i> ISBN
+                        </label>
+                        @Html.TextBoxFor(model => model.ISBN, new { @class = "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder = "978-3-16-148410-0" })
+                        @Html.ValidationMessageFor(model => model.ISBN, "", new { @class = "text-red-500 text-sm mt-1" })
+                    </div>
+
+                    <!-- Năm xuất bản -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-calendar-alt mr-1"></i> Năm xuất bản
+                        </label>
+                        @Html.TextBoxFor(model => model.NamXuatBan, new { @class = "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent", type = "number", min = "1900", max = "2100", placeholder = "2024" })
+                        @Html.ValidationMessageFor(model => model.NamXuatBan, "", new { @class = "text-red-500 text-sm mt-1" })
+                    </div>
+
+                    <!-- Danh mục -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-folder mr-1"></i> Danh mục
+                        </label>
+                        @Html.DropDownListFor(model => model.MaDanhMucCon, (SelectList)ViewBag.MaDanhMucConList, "-- Chọn danh mục --", new { @class = "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" })
+                        @Html.ValidationMessageFor(model => model.MaDanhMucCon, "", new { @class = "text-red-500 text-sm mt-1" })
+                    </div>
+
+                    <!-- Nhà xuất bản -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-building mr-1"></i> Nhà xuất bản
+                        </label>
+                        @Html.DropDownListFor(model => model.MaNXB, (SelectList)ViewBag.MaNXBList, "-- Chọn NXB --", new { @class = "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" })
+                        @Html.ValidationMessageFor(model => model.MaNXB, "", new { @class = "text-red-500 text-sm mt-1" })
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Thông tin File -->
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b-2 border-green-500">
+                    <i class="fas fa-file mr-2 text-green-500"></i>
+                    Thông tin File
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Đường dẫn file -->
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-link mr-1"></i> Đường dẫn file (Upload hoặc nhập URL)
+                        </label>
+                        @Html.TextBoxFor(model => model.DuongDanFile, new { @class = "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder = "Sẽ tự động điền khi upload file..." })
+                        @Html.ValidationMessageFor(model => model.DuongDanFile, "", new { @class = "text-red-500 text-sm mt-1" })
+                        
+                         <!-- Upload Document -->
+                        <div class="mt-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">
+                                <i class="fas fa-file-upload mr-1"></i> Upload file tài liệu
+                            </label>
+                            <input type="file" name="docFile" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                            <p class="text-xs text-gray-500 mt-1">Chọn file tài liệu (PDF, Word...). Đường dẫn sẽ tự động được cập nhật.</p>
+                        </div>
+                    </div>
+
+                    <!-- Định dạng -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-file-alt mr-1"></i> Định dạng file <span class="text-red-500">*</span>
+                        </label>
+                        @Html.DropDownListFor(model => model.DinhDang,
+                            new SelectList(new[] {
+                                new { Value = "PDF", Text = "📄 PDF - Portable Document Format" },
+                                new { Value = "DOCX", Text = "📝 DOCX - Microsoft Word" },
+                                new { Value = "DOC", Text = "📝 DOC - Microsoft Word (Legacy)" },
+                                new { Value = "XLSX", Text = "📊 XLSX - Microsoft Excel" },
+                                new { Value = "XLS", Text = "📊 XLS - Microsoft Excel (Legacy)" },
+                                new { Value = "PPTX", Text = "📊 PPTX - Microsoft PowerPoint" },
+                                new { Value = "PPT", Text = "📊 PPT - PowerPoint (Legacy)" },
+                                new { Value = "MP3", Text = "🎵 MP3 - Audio File" },
+                                new { Value = "WAV", Text = "🎵 WAV - Audio File" },
+                                new { Value = "MP4", Text = "🎬 MP4 - Video File" },
+                                new { Value = "AVI", Text = "🎬 AVI - Video File" },
+                                new { Value = "MKV", Text = "🎬 MKV - Video File" },
+                                new { Value = "ZIP", Text = "📦 ZIP - Archive" },
+                                new { Value = "RAR", Text = "📦 RAR - Archive" }
+                            }, "Value", "Text"),
+                            "-- Chọn định dạng --",
+                            new { @class = "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" })
+                        @Html.ValidationMessageFor(model => model.DinhDang, "", new { @class = "text-red-500 text-sm mt-1" })
+                    </div>
+
+                    <!-- Dung lượng -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-database mr-1"></i> Dung lượng (MB)
+                        </label>
+                        @Html.TextBoxFor(model => model.DungLuongMB, new { @class = "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent", type = "number", step = "0.01", min = "0", placeholder = "0.00" })
+                        @Html.ValidationMessageFor(model => model.DungLuongMB, "", new { @class = "text-red-500 text-sm mt-1" })
+                        <p class="text-xs text-gray-500 mt-1">Ví dụ: 15.25 MB</p>
+                    </div>
+
+                    <!-- Quyền tải xuống -->
+                    <div class="md:col-span-2">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" name="ChoPhepTai" value="true" checked class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500" />
+                            <span class="text-sm font-semibold text-gray-700">
+                                <i class="fas fa-download text-green-500 mr-2"></i>
+                                Cho phép người dùng tải xuống tài liệu
+                            </span>
+                        </label>
+                        <p class="text-xs text-gray-500 mt-2 ml-8">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Bỏ tick nếu tài liệu chỉ được xem trực tuyến (ví dụ: sách bản quyền)
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Metadata -->
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b-2 border-purple-500">
+                    <i class="fas fa-image mr-2 text-purple-500"></i>
+                    Metadata & Mô tả
+                </h3>
+                <div class="space-y-6">
+                    <!-- URL Ảnh bìa -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-link mr-1"></i> Đường dẫn Ảnh bìa (hoặc upload bên dưới)
+                        </label>
+                        @Html.TextBoxFor(model => model.AnhBia, new { @class = "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder = "https://example.com/cover.jpg" })
+                        @Html.ValidationMessageFor(model => model.AnhBia, "", new { @class = "text-red-500 text-sm mt-1" })
+                    </div>
+                    
+                    <!-- Upload Ảnh bìa -->
+                     <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-upload mr-1"></i> Tải ảnh bìa lên
+                        </label>
+                        <input type="file" name="imageFile" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <p class="text-xs text-gray-500 mt-1">Nếu chọn ảnh, đường dẫn ở trên sẽ được tự động cập nhật sau khi lưu.</p>
+                    </div>
+
+                    <!-- Mô tả -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-align-left mr-1"></i> Mô tả tóm tắt
+                        </label>
+                        @Html.TextAreaFor(model => model.MoTa, new { @class = "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent", rows = "4", maxlength = "500", placeholder = "Mô tả ngắn gọn về nội dung tài liệu..." })
+                        @Html.ValidationMessageFor(model => model.MoTa, "", new { @class = "text-red-500 text-sm mt-1" })
+                        <p class="text-xs text-gray-500 mt-1">Tối đa 500 ký tự</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info note -->
+            <div class="mb-6 bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                <p class="text-sm text-blue-700">
+                    <i class="fas fa-lightbulb mr-2"></i>
+                    <strong>Lưu ý:</strong> Sau khi tạo tài liệu, bạn có thể gán tác giả bằng nút "Quản lý tác giả" trong trang chỉnh sửa.
+                </p>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex items-center justify-between pt-6 border-t">
+                <a href="@Url.Action("Index")" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>Quay lại
+                </a>
+                <button type="submit" class="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md">
+                    <i class="fas fa-save mr-2"></i>Tạo tài liệu
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .ntu-blue {
+        color: #667eea;
+    }
+</style>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

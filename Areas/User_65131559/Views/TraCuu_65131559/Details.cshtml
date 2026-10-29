@@ -1,0 +1,404 @@
+@model ProjectCK_65131559.Models.TaiLieu
+@{
+    ViewBag.Title = Model.TenTaiLieu;
+    Layout = Request.IsAuthenticated ? "~/Areas/User_65131559/Views/Shared/_LayoutUser.cshtml" : "~/Views/Shared/_Layout.cshtml";
+    var relatedDocs = ViewBag.RelatedDocs as List<ProjectCK_65131559.Models.TaiLieu>;
+}
+
+<div class="container mx-auto max-w-6xl">
+    <!-- Breadcrumb -->
+    <nav class="flex text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
+        <a href="@(Request.IsAuthenticated ? Url.Action("Index", "UserHome_65131559") : Url.Action("Index", "Home_65131559", new { area = "" }))" class="hover:text-ntu-blue">Trang chủ</a>
+        <i class="fas fa-chevron-right mx-2 text-xs self-center"></i>
+        <a href="@Url.Action("Index", "TraCuu_65131559")" class="hover:text-ntu-blue">Tra cứu</a>
+        <i class="fas fa-chevron-right mx-2 text-xs self-center"></i>
+        <span class="text-gray-800 font-medium truncate max-w-xs">@Model.TenTaiLieu</span>
+    </nav>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- LEFT: Document Info -->
+        <div class="lg:col-span-2 space-y-8">
+            @if (TempData["QuotaError"] != null)
+            {
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-4 rounded shadow-sm animate-pulse">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle text-red-500 mr-3 text-lg"></i>
+                        <p class="text-sm text-red-700 font-bold">@TempData["QuotaError"]</p>
+                    </div>
+                </div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="bg-orange-50 border-l-4 border-orange-500 p-4 mb-4 rounded shadow-sm">
+                    <div class="flex items-center">
+                        <i class="fas fa-info-circle text-orange-500 mr-3"></i>
+                        <p class="text-sm text-orange-700">@TempData["ErrorMessage"]</p>
+                    </div>
+                </div>
+            }
+
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-6 md:p-8 flex flex-col md:flex-row gap-8">
+                    <!-- Cover Image -->
+                    <div class="w-full md:w-1/3 flex-shrink-0">
+                        <div class="aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden shadow-inner relative group">
+                            @if (!string.IsNullOrEmpty(Model.AnhBia))
+                            {
+                                <img src="@Model.AnhBia" alt="@Model.TenTaiLieu" class="w-full h-full object-cover">
+                            }
+                            else
+                            {
+                                <div class="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
+                                    <i class="fas fa-book text-6xl"></i>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Metadata -->
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-2">
+                             <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
+                                 @(Model.DanhMucCon != null ? Model.DanhMucCon.TenDanhMucCon : "Tài liệu")
+                             </span>
+                             @if(Model.LuotXem > 100) {
+                                 <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                                     <i class="fas fa-fire mr-1"></i>Hot
+                                 </span>
+                             }
+                        </div>
+                        
+                        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4 leading-tight">@Model.TenTaiLieu</h1>
+
+                        <div class="space-y-3 text-sm text-gray-600 mb-6">
+                            <div class="flex">
+                                <span class="w-32 font-medium text-gray-900 flex-shrink-0">Tác giả:</span>
+                                <div>
+                                    @if(Model.TacGias != null && Model.TacGias.Any()) {
+                                        foreach(var tg in Model.TacGias) {
+                                            <a href="@Url.Action("Index", "TraCuu_65131559", new { keyword = tg.HoTen })" class="text-ntu-blue hover:underline mr-2">@tg.HoTen</a>
+                                        }
+                                    } else {
+                                        <span>Đang cập nhật</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="flex">
+                                <span class="w-32 font-medium text-gray-900 flex-shrink-0">Nhà xuất bản:</span>
+                                <span>@(Model.NhaXuatBan != null ? Model.NhaXuatBan.TenNXB : "N/A")</span>
+                            </div>
+                            <div class="flex">
+                                <span class="w-32 font-medium text-gray-900 flex-shrink-0">Năm xuất bản:</span>
+                                <span>@(Model.NamXuatBan != null ? Model.NamXuatBan.ToString() : "N/A")</span>
+                            </div>
+                            <div class="flex">
+                                <span class="w-32 font-medium text-gray-900 flex-shrink-0">Định dạng:</span>
+                                <span class="uppercase font-bold text-gray-700">@(Model.DinhDang ?? "file")</span>
+                            </div>
+                            <div class="flex">
+                                <span class="w-32 font-medium text-gray-900 flex-shrink-0">Dung lượng:</span>
+                                <span>@(Model.DungLuongMB.HasValue ? Model.DungLuongMB + " MB" : "Unknown")</span>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-wrap gap-4 pt-4 border-t border-gray-100">
+                            <button onclick="readWithAgreement(@Model.MaTaiLieu)" class="flex-1 bg-ntu-blue text-center text-white px-6 py-3 rounded-lg font-bold hover:bg-ntu-dark transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center">
+                                <i class="fas fa-book-reader mr-2"></i> Đọc trực tuyến
+                            </button>
+                            
+                            @if (Model.ChoPhepTai == true)
+                            {
+                                <a href="@Url.Action("Download", new { id = Model.MaTaiLieu })" class="flex-1 bg-green-600 text-center text-white px-6 py-3 rounded-lg font-bold hover:bg-green-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center">
+                                    <i class="fas fa-download mr-2"></i> Tải xuống
+                                </a>
+                            }
+
+                            <button onclick="toggleFavorite(@Model.MaTaiLieu)" id="btnFavorite" class="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-red-50 hover:text-red-500 transition font-medium border border-transparent hover:border-red-200" title="Lưu vào yêu thích">
+                                <i class="far fa-heart text-xl"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-center text-gray-500 mt-2">
+                             <i class="fas fa-eye mr-1"></i> @Model.LuotXem lượt xem &bull; <i class="fas fa-download mx-1"></i> @Model.LuotTai lượt tải
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+<script>
+    function toggleFavorite(id) {
+        fetch('@Url.Action("Toggle", "TuSach_65131559", new { area = "User_65131559" })', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: id })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                var btn = document.getElementById('btnFavorite');
+                var icon = btn.querySelector('i');
+                if (data.isAdded) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas', 'text-red-500');
+                    btn.classList.add('text-red-500', 'bg-red-50');
+                } else {
+                    icon.classList.remove('fas', 'text-red-500');
+                    icon.classList.add('far');
+                    btn.classList.remove('text-red-500', 'bg-red-50');
+                }
+            } else {
+                if(data.message.includes("đăng nhập")) {
+                    // Chuyển hướng ngay trên tab hiện tại
+                    window.location.href = '@Url.Action("Login", "Account_65131559", new { area = "" })?returnUrl=' + encodeURIComponent(window.location.pathname + window.location.search);
+                } else {
+                    alert(data.message);
+                }
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    let selectedStars = 0;
+    function setStars(val) {
+        selectedStars = val;
+        const btns = document.querySelectorAll('.star-btn');
+        btns.forEach((btn, index) => {
+            if (index < val) {
+                btn.classList.remove('text-gray-300');
+                btn.classList.add('text-yellow-400');
+            } else {
+                btn.classList.remove('text-yellow-400');
+                btn.classList.add('text-gray-300');
+            }
+        });
+    }
+
+    function submitReview(maTaiLieu) {
+        if (selectedStars === 0) {
+            alert("Vui lòng chọn số sao đánh giá!");
+            return;
+        }
+        const comment = document.getElementById('reviewContent').value;
+        if (!comment.trim()) {
+            alert("Vui lòng nhập nội dung bình luận!");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('maTaiLieu', maTaiLieu);
+        formData.append('diemSao', selectedStars);
+        formData.append('binhLuan', comment);
+        
+        // Add Antiforgery Token
+        var tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+        if (tokenInput) formData.append('__RequestVerificationToken', tokenInput.value);
+
+        fetch('@Url.Action("Submit", "DanhGia_65131559", new { area = "User_65131559" })', {
+            method: 'POST',
+            body: formData
+        })
+        .then(function(response) {
+            if (!response.ok) {
+                return response.text().then(function(text) {
+                    throw new Error("Server error: " + response.status + " - " + text.substring(0, 100));
+                });
+            }
+            return response.json();
+        })
+        .then(function(data) {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert("Lỗi: " + data.message);
+            }
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+            alert("Đã xảy ra lỗi khi gửi đánh giá. Vui lòng thử lại sau! (Chi tiết: " + error.message + ")");
+        });
+    }
+    function readWithAgreement(id) {
+        @if (User.Identity.IsAuthenticated)
+        {
+            <text>
+            if (confirm("CẢNH BÁO: Tài liệu số được cung cấp cho mục đích nghiên cứu và học tập cá nhân. Bạn cam kết không sao chép, phát tán trái phép. Bạn có đồng ý với điều khoản này không?")) {
+                // Mở ngay trên tab hiện tại thay vì tab mới
+                window.location.href = '@Url.Action("Read")/' + id;
+            }
+            </text>
+        }
+        else
+        {
+            <text>
+            // Chuyển hướng sang trang đăng nhập trên cùng một tab và truyền returnUrl
+            window.location.href = '@Url.Action("Login", "Account_65131559", new { area = "" })?returnUrl=' + encodeURIComponent(window.location.pathname + window.location.search);
+            </text>
+        }
+    }
+</script>
+
+@Html.AntiForgeryToken()
+
+            <!-- Description -->
+            <div class="bg-white rounded-xl shadow-md p-6 md:p-8">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Tóm tắt nội dung</h3>
+                <div class="prose max-w-none text-gray-600 leading-relaxed">
+                    @if(!string.IsNullOrEmpty(Model.MoTa)) {
+                        @Html.Raw(Model.MoTa.Replace("\n", "<br>"))
+                    } else {
+                        <p class="italic text-gray-400">Chưa có mô tả cho tài liệu này.</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Review Section -->
+            <div class="mt-8 bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-6 md:p-8 bg-gray-50 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                        <i class="fas fa-comments text-ntu-blue mr-3"></i> Đánh giá từ cộng đồng
+                    </h3>
+                    @if (Model.DanhGias != null && Model.DanhGias.Any(d => d.DuocHienThi == true))
+                    {
+                        <div class="flex items-center bg-white px-3 py-1 rounded-full shadow-sm border border-gray-100">
+                            <span class="text-yellow-500 font-bold mr-1">@(Math.Round(Model.DanhGias.Where(d => d.DuocHienThi == true).Average(d => d.DiemSao ?? 0), 1))</span>
+                            <i class="fas fa-star text-yellow-400 text-xs"></i>
+                            <span class="text-gray-400 text-xs ml-2">(@Model.DanhGias.Count(d => d.DuocHienThi == true) đánh giá)</span>
+                        </div>
+                    }
+                </div>
+                
+                <div class="p-6 md:p-8">
+                    <!-- Submit Review Form -->
+                    <div class="mb-8 pb-8 border-b border-gray-100">
+                        <h4 class="font-bold text-gray-700 mb-4">Viết đánh giá của bạn</h4>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <div class="space-y-4">
+                                <div class="flex items-center space-x-2" id="starRating">
+                                    <span class="text-sm text-gray-500 mr-2">Chất lượng:</span>
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <button type="button" onclick="setStars(@i)" class="text-2xl text-gray-300 hover:text-yellow-400 transition-colors focus:outline-none star-btn" data-value="@i">
+                                            <i class="fas fa-star"></i>
+                                        </button>
+                                    }
+                                </div>
+                                <textarea id="reviewContent" rows="3" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-ntu-blue focus:border-ntu-blue p-3 text-sm" placeholder="Chia sẻ cảm nghĩ của bạn về tài liệu này..."></textarea>
+                                <button type="button" onclick="submitReview(@Model.MaTaiLieu)" class="bg-ntu-blue text-white px-6 py-2 rounded-lg font-medium hover:bg-ntu-dark transition-colors flex items-center shadow-md">
+                                    <i class="fas fa-paper-plane mr-2"></i> Gửi đánh giá
+                                </button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 flex items-center justify-between">
+                                <p class="text-sm text-blue-700">Vui lòng đăng nhập để gửi đánh giá và bình luận.</p>
+                                <a href="@Url.Action("Login", "Account_65131559", new { area = "" })" class="text-sm font-bold text-ntu-blue hover:underline">Đăng nhập ngay &rarr;</a>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Review List -->
+                    <div id="reviewList" class="space-y-6">
+                        @{
+                            var activeReviews = Model.DanhGias != null ? Model.DanhGias.Where(d => d.DuocHienThi == true).OrderByDescending(d => d.NgayDang).ToList() : new List<ProjectCK_65131559.Models.DanhGia>();
+                        }
+                        
+                        @if (activeReviews.Any())
+                        {
+                            foreach (var review in activeReviews)
+                            {
+                                <div class="flex space-x-4">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-ntu-blue font-bold">
+                                            @(review.NguoiDung != null && !string.IsNullOrEmpty(review.NguoiDung.HoTen) ? review.NguoiDung.HoTen.Substring(0, 1).ToUpper() : "?")
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 bg-gray-50 rounded-2xl p-4 relative">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <div>
+                                                <h5 class="font-bold text-sm text-gray-800">@(review.NguoiDung != null ? (review.NguoiDung.HoTen ?? review.NguoiDung.TenDangNhap) : "Ẩn danh")</h5>
+                                                <div class="flex text-yellow-400 text-[10px] mt-0.5">
+                                                    @for (int i = 1; i <= 5; i++)
+                                                    {
+                                                        <i class="@(i <= (review.DiemSao ?? 0) ? "fas" : "far") fa-star"></i>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <span class="text-[10px] text-gray-400">@(review.NgayDang.HasValue ? review.NgayDang.Value.ToString("dd/MM/yyyy HH:mm") : "")</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 leading-relaxed">@review.BinhLuan</p>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-center py-8 text-gray-400 italic">
+                                <i class="far fa-comment-dots text-3xl mb-2 block"></i>
+                                Chưa có đánh giá nào. Hãy là người đầu tiên chia sẻ cảm nghĩ!
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Related Stats/Docs -->
+        <div class="space-y-6">
+            <!-- Author/Uploader Profile (Optional) -->
+            <!--
+            <div class="bg-white rounded-xl shadow-md p-6">
+                 <h4 class="font-bold text-gray-800 mb-3 text-sm uppercase tracking-wide">Người đăng</h4>
+                 <div class="flex items-center gap-3">
+                     <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-ntu-blue font-bold">
+                         U
+                     </div>
+                     <div>
+                         <p class="text-sm font-semibold text-gray-900">Admin</p>
+                         <p class="text-xs text-gray-500">Quản trị viên</p>
+                     </div>
+                 </div>
+            </div>
+            -->
+
+            <!-- Related Documents -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h4 class="font-bold text-gray-800 mb-4 text-sm uppercase tracking-wide flex items-center justify-between">
+                    <span>Cùng danh mục</span>
+                    <a href="@Url.Action("Index", new { maDanhMuc = Model.MaDanhMucCon })" class="text-ntu-blue text-xs normal-case hover:underline">Xem tất cả</a>
+                </h4>
+                
+                @if (relatedDocs != null && relatedDocs.Any())
+                {
+                    <div class="space-y-4">
+                        @foreach (var item in relatedDocs)
+                        {
+                            <a href="@Url.Action("Details", new { id = item.MaTaiLieu })" class="flex gap-3 group">
+                                <div class="w-12 h-16 bg-gray-100 rounded flex-shrink-0 overflow-hidden">
+                                     @if (!string.IsNullOrEmpty(item.AnhBia))
+                                    {
+                                        <img src="@item.AnhBia" class="w-full h-full object-cover">
+                                    }
+                                </div>
+                                <div>
+                                    <h5 class="text-sm font-semibold text-gray-700 line-clamp-2 group-hover:text-ntu-blue transition-colors">@item.TenTaiLieu</h5>
+                                    <p class="text-xs text-gray-500 mt-1"><i class="fas fa-eye mr-1"></i>@item.LuotXem</p>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-sm text-gray-500 italic">Không có tài liệu liên quan.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

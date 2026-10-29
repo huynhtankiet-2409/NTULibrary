@@ -1,0 +1,230 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - User - Thư viện số Đại học Nha Trang</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'ntu-blue': '#1e40af',
+                        'ntu-light': '#3b82f6',
+                        'ntu-dark': '#1e3a8a',
+                        'user-green': '#059669',
+                        'user-light': '#10b981',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    <!-- Top Header Bar -->
+    <div class="bg-gradient-to-r from-ntu-dark via-ntu-blue to-ntu-light text-white shadow-lg relative z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <a href="@Url.Action("Index", "UserHome_65131559", new { area = "User_65131559" })" class="flex items-center space-x-4 hover:opacity-90 transition-opacity duration-200">
+                    <img src="~/Images/logo.jpg" alt="NTU Logo" class="h-14 w-14 rounded-full object-cover shadow-md">
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-wide">Thư viện số</h1>
+                        <p class="text-sm text-blue-100">Đại học Nha Trang</p>
+                    </div>
+                </a>
+                <div class="flex items-center space-x-6">
+                    <div class="hidden md:flex items-center space-x-6 text-sm">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-envelope"></i>
+                            <span>library@ntu.edu.vn</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-phone"></i>
+                            <span>(0258) 3831-147</span>
+                        </div>
+                    </div>
+                    <!-- User Dropdown Menu -->
+                    <div class="relative ml-4">
+                        <button onclick="toggleUserMenu()" id="userMenuButton" class="flex items-center space-x-3 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/30 hover:bg-white/30 transition-all duration-200 focus:outline-none">
+                            <i class="fas fa-user-circle text-xl"></i>
+                            <div class="text-left hidden md:block">
+                                <p class="text-sm font-semibold leading-none">@User.Identity.Name</p>
+                                <p class="text-xs text-blue-100 mt-1">@(Session["VaiTro"] != null ? Session["VaiTro"].ToString() : "User")</p>
+                            </div>
+                            <i class="fas fa-chevron-down text-xs ml-2 transition-transform duration-200" id="userMenuArrow"></i>
+                        </button>
+
+                        <!-- Dropdown Content -->
+                        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl py-2 z-50 transform origin-top-right transition-all duration-200 animate-fade-in-down border border-gray-100">
+                            <div class="px-4 py-3 border-b border-gray-100">
+                                <p class="text-sm text-gray-500">Xin chào,</p>
+                                <p class="text-sm font-bold text-gray-900 truncate">@User.Identity.Name</p>
+                            </div>
+                            
+                            <a href="@Url.Action("UserProfile", "Account_65131559", new { area = "" })" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-ntu-blue transition-colors duration-150 flex items-center">
+                                <i class="fas fa-id-card w-5 mr-2 text-gray-400"></i>
+                                Thông tin tài khoản
+                            </a>
+                            <a href="@Url.Action("ChangePassword", "Account_65131559", new { area = "" })" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-ntu-blue transition-colors duration-150 flex items-center">
+                                <i class="fas fa-key w-5 mr-2 text-gray-400"></i>
+                                Đổi mật khẩu
+                            </a>
+                            
+                            <div class="border-t border-gray-100 my-1"></div>
+                            
+                            <a href="@Url.Action("LogOff", "Account_65131559", new { area = "" })" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors duration-150 flex items-center">
+                                <i class="fas fa-sign-out-alt w-5 mr-2"></i>
+                                Đăng xuất
+                            </a>
+                        </div>
+                    </div>
+
+                    <script>
+                        function toggleUserMenu() {
+                            const dropdown = document.getElementById('userDropdown');
+                            const arrow = document.getElementById('userMenuArrow');
+                            dropdown.classList.toggle('hidden');
+                            arrow.classList.toggle('rotate-180');
+                        }
+
+                        // Close dropdown when clicking outside
+                        window.onclick = function(event) {
+                            if (!event.target.closest('#userMenuButton')) {
+                                const dropdown = document.getElementById('userDropdown');
+                                const arrow = document.getElementById('userMenuArrow');
+                                if (!dropdown.classList.contains('hidden')) {
+                                    dropdown.classList.add('hidden');
+                                    arrow.classList.remove('rotate-180');
+                                }
+                            }
+                        }
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-8">
+                    <div class="flex items-center space-x-6">
+                        <a href="@Url.Action("Index", "UserHome_65131559", new { area = "User_65131559" })" 
+                           class="text-gray-700 hover:text-ntu-blue font-medium transition-colors duration-200">
+                            Trang chủ
+                        </a>
+                        <a href="@Url.Action("Index", "TraCuu_65131559", new { area = "User_65131559" })" class="text-gray-700 hover:text-ntu-blue font-medium transition-colors duration-200">Tra cứu</a>
+                        <a href="@Url.Action("Index", "TuSach_65131559", new { area = "User_65131559" })" class="text-gray-700 hover:text-ntu-blue font-medium transition-colors duration-200">Yêu thích</a>
+                        <a href="@Url.Action("Index", "DienDan_65131559", new { area = "User_65131559" })" class="text-gray-700 hover:text-ntu-blue font-medium transition-colors duration-200">Diễn đàn</a>
+                        <a href="@Url.Action("Index", "YeuCau_65131559", new { area = "User_65131559" })" class="text-gray-700 hover:text-ntu-blue font-medium transition-colors duration-200">Gửi yêu cầu</a>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-4">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+        <div class="container mx-auto px-4 py-8">
+            @RenderBody()
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 text-white mt-auto">
+        <div class="container mx-auto px-4 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- About Section -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-graduation-cap mr-2 text-ntu-light"></i>
+                        Thư viện số NTU
+                    </h3>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Hệ thống quản lý thư viện số của Đại học Nha Trang, 
+                        cung cấp dịch vụ tra cứu và quản lý tài liệu học thuật, 
+                        nghiên cứu khoa học một cách hiện đại và hiệu quả.
+                    </p>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-link mr-2 text-ntu-light"></i>
+                        Liên kết nhanh
+                    </h3>
+                    <ul class="space-y-2 text-sm">
+                        <li>
+                            <a href="@Url.Action("Index", "Home_65131559", new { area = "" })" class="text-gray-300 hover:text-ntu-light transition-colors duration-200 flex items-center">Trang chủ</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "TraCuu_65131559", new { area = "User_65131559" })" class="text-gray-300 hover:text-ntu-light transition-colors duration-200 flex items-center">Tra cứu tài liệu</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-map-marker-alt mr-2 text-ntu-light"></i>
+                        Thông tin liên hệ
+                    </h3>
+                    <ul class="space-y-3 text-sm text-gray-300">
+                        <li class="flex items-start">
+                            <i class="fas fa-university mt-1 mr-3 text-ntu-light"></i>
+                            <span>Số 02 Nguyễn Đình Chiểu, Phường Vĩnh Phước, TP. Nha Trang</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-3 text-ntu-light"></i>
+                            <span>(0258) 3831-147</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-3 text-ntu-light"></i>
+                            <span>library@ntu.edu.vn</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="border-t border-gray-700 mt-8 pt-6">
+                <div class="flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
+                    <p>&copy; @DateTime.Now.Year Đại học Nha Trang. MSSV: 65131559</p>
+                    <div class="flex space-x-6 mt-4 md:mt-0">
+                        <a href="https://www.facebook.com/thuvien.ntu.edu.vn/" target="_blank" class="hover:text-ntu-light transition-colors duration-200">
+                            <i class="fab fa-facebook-f text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+    </script>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

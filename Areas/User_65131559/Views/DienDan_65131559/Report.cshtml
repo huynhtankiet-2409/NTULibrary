@@ -1,0 +1,70 @@
+@model ProjectCK_65131559.Models.DienDan_BaiViet
+@{
+    ViewBag.Title = "Báo cáo nội dung vi phạm";
+    Layout = "~/Areas/User_65131559/Views/Shared/_LayoutUser.cshtml";
+}
+
+<div class="container mx-auto max-w-2xl">
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100 mt-10">
+        <div class="bg-red-600 px-8 py-10 text-white">
+            <h2 class="text-2xl font-black uppercase tracking-tight flex items-center">
+                <i class="fas fa-flag mr-4"></i> Báo cáo vi phạm
+            </h2>
+            <p class="text-red-100 text-sm mt-2">Bạn đang báo cáo bài viết: <span class="font-bold underline">@Model.TieuDe</span></p>
+        </div>
+
+        <div class="p-8 md:p-12 space-y-8">
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-xl">
+                <p class="text-xs text-yellow-800 font-medium leading-relaxed">
+                    <i class="fas fa-info-circle mr-2"></i> Hệ thống sẽ xem xét báo cáo của bạn. Vui lòng cung cấp lý do chi tiết để chúng tôi có thể xử lý nhanh chóng và chính xác nhất.
+                </p>
+            </div>
+
+            <div class="space-y-4">
+                <label class="block text-sm font-extrabold text-gray-800 uppercase tracking-widest pl-1">Lý do báo cáo <span class="text-red-500">*</span></label>
+                <textarea id="lyDo" rows="5" class="w-full px-5 py-5 rounded-2xl border border-gray-300 focus:ring-4 focus:ring-red-500/10 focus:border-red-500 transition-all outline-none font-medium text-gray-700 placeholder-gray-400 shadow-inner" placeholder="VD: Nội dung rác, đả kích cá nhân, vi phạm bản quyền..."></textarea>
+            </div>
+
+            <div class="flex items-center justify-between pt-6">
+                <a href="@Url.Action("BaiViet", new { id = Model.MaBaiViet })" class="text-gray-400 hover:text-gray-800 font-bold flex items-center transition-all px-4 py-2 hover:bg-gray-100 rounded-lg">
+                    Hủy bỏ
+                </a>
+                <button onclick="sendReport()" class="bg-red-600 text-white px-10 py-4 rounded-2xl font-black hover:bg-red-700 transition-all shadow-xl hover:shadow-red-600/30 transform hover:-translate-y-1 active:scale-95 flex items-center uppercase tracking-widest text-sm">
+                    Gửi báo cáo <i class="fas fa-paper-plane ml-3"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+<script>
+    function sendReport() {
+        const lyDo = document.getElementById('lyDo').value;
+        if (!lyDo.trim()) {
+            alert("Vui lòng nhập lý do báo cáo!");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('maBaiViet', '@Model.MaBaiViet');
+        formData.append('lyDo', lyDo);
+        
+        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+        if(token) formData.append('__RequestVerificationToken', token);
+
+        fetch('@Url.Action("SendReport")', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message);
+            if (data.success) {
+                window.location.href = '@Url.Action("BaiViet", new { id = Model.MaBaiViet })';
+            }
+        });
+    }
+</script>
+}
+@Html.AntiForgeryToken()

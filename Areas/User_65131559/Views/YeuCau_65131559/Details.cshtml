@@ -1,0 +1,138 @@
+@model ProjectCK_65131559.Models.YeuCau
+
+@{
+    ViewBag.Title = "Chi tiết Yêu cầu #" + Model.MaYeuCau;
+    Layout = "~/Areas/User_65131559/Views/Shared/_LayoutUser.cshtml";
+}
+
+<div class="max-w-4xl mx-auto space-y-8">
+    <!-- Breadcrumb -->
+    <nav class="flex text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
+        <a href="@Url.Action("Index")" class="hover:text-ntu-blue">Yêu cầu & Hỗ trợ</a>
+        <i class="fas fa-chevron-right mx-2 text-xs self-center"></i>
+        <span class="text-gray-800 font-medium">Chi tiết yêu cầu #@Model.MaYeuCau</span>
+    </nav>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- User Content -->
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
+                <div class="p-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <span class="px-4 py-1.5 bg-blue-50 text-ntu-blue text-xs font-bold rounded-full uppercase tracking-widest border border-blue-100">
+                            Nội dung yêu cầu
+                        </span>
+                        <span class="text-xs text-gray-400 italic">
+                            @(Model.NgayGui.HasValue ? Model.NgayGui.Value.ToString("dd/MM/yyyy HH:mm") : "N/A")
+                        </span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4 leading-tight">@Model.TieuDe</h2>
+                    <div class="text-gray-700 leading-relaxed bg-gray-50 p-6 rounded-2xl border border-dashed border-gray-200">
+                        @Model.NoiDung
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Response -->
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 relative">
+                @if (string.IsNullOrEmpty(Model.PhanHoiTuAdmin))
+                {
+                    <div class="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex flex-col items-center justify-center p-8 text-center z-10 transition-all">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 mb-4 animate-bounce">
+                            <i class="fas fa-hourglass-half text-2xl"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-500">Đang chờ phản hồi...</h4>
+                        <p class="text-xs text-gray-400 mt-2">Chúng tôi đang xử lý yêu cầu của bạn, vui lòng kiểm tra lại sau.</p>
+                    </div>
+                    <div class="p-8 filter blur-[2px] opacity-20 pointer-events-none">
+                        <div class="h-4 w-32 bg-gray-200 rounded mb-4"></div>
+                        <div class="h-20 w-full bg-gray-100 rounded-2xl"></div>
+                    </div>
+                }
+                else
+                {
+                    <div class="bg-ntu-blue/5 border-b border-ntu-blue/10 px-8 py-5 flex items-center justify-between">
+                        <h4 class="font-bold text-ntu-blue flex items-center">
+                            <i class="fas fa-shield-halved mr-3"></i> Phản hồi từ Ban Quản trị
+                        </h4>
+                        @if (Model.NgayXuLy.HasValue)
+                        {
+                            <span class="text-xs text-ntu-blue/60 italic">@Model.NgayXuLy.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                        }
+                    </div>
+                    <div class="p-8">
+                        <div class="text-gray-800 leading-relaxed prose prose-blue max-w-none">
+                            @Model.PhanHoiTuAdmin
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Sidebar / Status -->
+        <div class="space-y-6">
+            <div class="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6 flex items-center">
+                    <i class="fas fa-info-circle mr-2 text-ntu-blue"></i> Trạng thái hiện tại
+                </h4>
+
+                @{
+                    var statusIcon = "fa-clock";
+                    var statusLabel = "Chờ xử lý";
+                    var statusColor = "text-amber-500 bg-amber-50";
+                    var progress = "w-1/4";
+
+                    switch (Model.TrangThai)
+                    {
+                        case "DangXuLy":
+                            statusIcon = "fa-sync fa-spin";
+                            statusLabel = "Đang xử lý";
+                            statusColor = "text-blue-500 bg-blue-50";
+                            progress = "w-2/4";
+                            break;
+                        case "DaXong":
+                            statusIcon = "fa-check-double";
+                            statusLabel = "Đã hoàn tất";
+                            statusColor = "text-green-500 bg-green-50";
+                            progress = "w-full";
+                            break;
+                        case "TuChoi":
+                            statusIcon = "fa-times-circle";
+                            statusLabel = "Từ chối";
+                            statusColor = "text-red-500 bg-red-50";
+                            progress = "w-full";
+                            break;
+                    }
+                }
+
+                <div class="flex flex-col items-center text-center space-y-4">
+                    <div class="w-20 h-20 rounded-full @statusColor flex items-center justify-center text-3xl shadow-inner">
+                        <i class="fas @statusIcon"></i>
+                    </div>
+                    <div>
+                        <p class="font-black text-xl text-gray-900 border-b-2 border-ntu-blue/20 inline-block px-2">@statusLabel</p>
+                    </div>
+                    <div class="w-full bg-gray-100 h-2.5 rounded-full mt-4 overflow-hidden p-0.5">
+                        <div class="h-full rounded-full transition-all duration-1000 ease-out @(Model.TrangThai == "TuChoi" ? "bg-red-500" : "bg-ntu-blue") @progress"></div>
+                    </div>
+                </div>
+
+                <div class="mt-8 space-y-4 text-xs font-medium text-gray-500">
+                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl">
+                        <span>Mã tra cứu:</span>
+                        <span class="text-gray-900 font-bold">#RYC-@Model.MaYeuCau.ToString("D4")</span>
+                    </div>
+                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl">
+                        <span>Độ ưu tiên:</span>
+                        <span class="text-ntu-blue font-bold">Bình thường</span>
+                    </div>
+                </div>
+            </div>
+
+            <a href="@Url.Action("Index")" class="flex items-center justify-center w-full py-4 rounded-2xl bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 transition-all">
+                <i class="fas fa-arrow-left mr-2"></i> Trở về danh sách
+            </a>
+        </div>
+    </div>
+</div>

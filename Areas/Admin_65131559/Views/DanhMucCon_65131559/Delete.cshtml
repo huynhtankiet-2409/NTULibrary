@@ -1,0 +1,52 @@
+﻿@model ProjectCK_65131559.Models.DanhMucCon
+
+@{
+    ViewBag.Title = "Xóa Danh mục con";
+    Layout = "~/Areas/Admin_65131559/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="max-w-xl mx-auto mt-12">
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+        <!-- Warning Header -->
+        <div class="bg-red-50 p-6 text-center border-b border-red-100">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4 animate-pulse">
+                <i class="fas fa-trash-alt text-3xl text-red-600"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Xác nhận xóa</h2>
+            <p class="text-red-600 font-medium">Bạn có chắc chắn muốn xóa Danh mục con này?</p>
+            <p class="text-xs text-gray-500 mt-2">Hành động này có thể ảnh hưởng đến các tài liệu thuộc danh mục này!</p>
+        </div>
+
+        <div class="p-8">
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-8">
+                <div class="flex items-center mb-2">
+                    <span class="text-gray-500 text-xs font-bold uppercase w-16">ID:</span>
+                    <span class="font-mono text-gray-700 font-semibold">@Model.MaDanhMucCon</span>
+                </div>
+                <div class="flex items-center mb-2">
+                    <span class="text-gray-500 text-xs font-bold uppercase w-16">Tên:</span>
+                    <span class="text-gray-900 font-bold text-lg">@Model.TenDanhMucCon</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="text-gray-500 text-xs font-bold uppercase w-16">Thuộc:</span>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
+                        @(Model.DanhMucCha != null ? Model.DanhMucCha.TenDanhMucCha : "---")
+                    </span>
+                </div>
+            </div>
+
+            @using (Html.BeginForm()) {
+                @Html.AntiForgeryToken()
+
+                <div class="flex items-center justify-center space-x-4">
+                    <a href="@Url.Action("Index")" class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors w-full text-center">
+                        <i class="fas fa-times mr-2"></i>Hủy bỏ
+                    </a>
+                    <button type="submit" class="px-6 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 shadow-md transition-transform transform hover:-translate-y-0.5 w-full">
+                        <i class="fas fa-trash-alt mr-2"></i>Xác nhận xóa
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>

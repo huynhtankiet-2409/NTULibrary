@@ -1,0 +1,39 @@
+@{
+    ViewBag.Title = "Trang Quản Trị";
+    Layout = "~/Areas/Admin_65131559/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="space-y-6">
+    <!-- Welcome Card -->
+    <div class="bg-gradient-to-r from-sidebar-blue to-blue-600 rounded-xl shadow-lg p-8 text-white">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold mb-2">Xin chào, @Session["HoTen"]!</h1>
+                <p class="text-blue-100">Chào mừng đến với trang quản trị hệ thống Thư viện số</p>
+            </div>
+            <div class="hidden md:block">
+                <i class="fas fa-user-shield text-white/20 text-8xl"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+         <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Hướng dẫn nhanh</h3>
+            <ul class="space-y-2 text-gray-600">
+                <li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i> Quản lý tài liệu và phân quyền tải xuống</li>
+                <li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i> Duyệt các yêu cầu tài liệu từ sinh viên</li>
+                <li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i> Kiểm duyệt bình luận và đánh giá</li>
+            </ul>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Thống kê hệ thống</h3>
+            <p class="text-gray-600 mb-4">Xem chi tiết các báo cáo và thống kê truy cập tại mục "Lịch sử truy cập".</p>
+            <a href="@Url.Action("Dashboard", "LichSuTruyCap_65131559")" class="text-blue-600 hover:text-blue-800 font-medium">
+                Xem thống kê chi tiết &rarr;
+            </a>
+        </div>
+    </div>
+</div>

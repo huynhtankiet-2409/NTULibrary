@@ -1,0 +1,130 @@
+@model ProjectCK_65131559.Models.NguoiDung
+
+@{
+    ViewBag.Title = Model.TrangThai == "HoatDong" ? "Khóa Tài Khoản" : "Mở Khóa Tài Khoản";
+    Layout = "~/Areas/Admin_65131559/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="max-w-2xl mx-auto space-y-6">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+            <i class="fas @(Model.TrangThai == "HoatDong" ? "fa-lock text-red-600" : "fa-unlock text-green-600") mr-3"></i>
+            @(Model.TrangThai == "HoatDong" ? "Khóa Tài Khoản" : "Mở Khóa Tài Khoản")
+        </h2>
+    </div>
+
+    <!-- Confirmation Card -->
+    <div class="bg-white rounded-lg shadow-md p-8">
+        <!-- User Info -->
+        <div class="text-center mb-8">
+            @if (!string.IsNullOrEmpty(Model.AnhDaiDien))
+            {
+                <img class="h-24 w-24 rounded-full object-cover mx-auto mb-4 border-4 border-gray-200" src="@Model.AnhDaiDien" alt="Avatar">
+            }
+            else
+            {
+                <div class="h-24 w-24 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center mx-auto mb-4">
+                    <span class="text-white font-bold text-3xl">@(Model.HoTen != null && Model.HoTen.Length > 0 ? Model.HoTen.Substring(0, 1).ToUpper() : "?")</span>
+                </div>
+            }
+            <h3 class="text-xl font-bold text-gray-900">@Model.HoTen</h3>
+            <p class="text-gray-600">@@@Model.TenDangNhap</p>
+        </div>
+
+        <!-- Details -->
+        <div class="bg-gray-50 rounded-lg p-6 mb-6 space-y-3">
+            <div class="flex justify-between">
+                <span class="text-gray-600">Email:</span>
+                <span class="font-medium text-gray-900">@(Model.Email ?? "N/A")</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-600">MSSV:</span>
+                <span class="font-medium text-gray-900">@(Model.MaSoSinhVien ?? "N/A")</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-600">Khoa:</span>
+                <span class="font-medium text-gray-900">@(Model.Khoa ?? "N/A")</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-600">Trạng thái hiện tại:</span>
+                @if (Model.TrangThai == "HoatDong")
+                {
+                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                        <i class="fas fa-check-circle mr-1"></i> Hoạt động
+                    </span>
+                }
+                else
+                {
+                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                        <i class="fas fa-lock mr-1"></i> Bị khóa
+                    </span>
+                }
+            </div>
+            <div class="flex justify-between pt-3 border-t">
+                <span class="text-gray-600">Trạng thái mới:</span>
+                @if (Model.TrangThai == "HoatDong")
+                {
+                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                        <i class="fas fa-lock mr-1"></i> Bị khóa
+                    </span>
+                }
+                else
+                {
+                    <span class="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                        <i class="fas fa-check-circle mr-1"></i> Hoạt động
+                    </span>
+                }
+            </div>
+        </div>
+
+        <!-- Warning -->
+        @if (Model.TrangThai == "HoatDong")
+        {
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded">
+                <div class="flex">
+                    <i class="fas fa-exclamation-triangle text-red-500 text-xl mr-3 mt-1"></i>
+                    <div>
+                        <h4 class="text-red-800 font-semibold mb-1">Cảnh báo!</h4>
+                        <p class="text-red-700 text-sm">
+                            Khi khóa tài khoản, người dùng sẽ không thể đăng nhập vào hệ thống. 
+                            @if (!string.IsNullOrEmpty(Model.Email))
+                            {
+                                <text>Email thông báo sẽ được gửi đến @Model.Email.</text>
+                            }
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded">
+                <div class="flex">
+                    <i class="fas fa-info-circle text-green-500 text-xl mr-3 mt-1"></i>
+                    <div>
+                        <h4 class="text-green-800 font-semibold mb-1">Thông tin</h4>
+                        <p class="text-green-700 text-sm">
+                            Sau khi mở khóa, người dùng sẽ có thể đăng nhập lại vào hệ thống.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Buttons -->
+        @using (Html.BeginForm("ToggleLockConfirmed", "NguoiDung_65131559", new { id = Model.MaNguoiDung }, FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <div class="flex items-center justify-between">
+                <a href="@Url.Action("Index")" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-times mr-2"></i>Hủy bỏ
+                </a>
+                <button type="submit" class="px-8 py-3 @(Model.TrangThai == "HoatDong" ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700") text-white font-semibold rounded-lg transition-all shadow-md">
+                    <i class="fas @(Model.TrangThai == "HoatDong" ? "fa-lock" : "fa-unlock") mr-2"></i>
+                    @(Model.TrangThai == "HoatDong" ? "Xác nhận khóa" : "Xác nhận mở khóa")
+                </button>
+            </div>
+        }
+    </div>
+</div>

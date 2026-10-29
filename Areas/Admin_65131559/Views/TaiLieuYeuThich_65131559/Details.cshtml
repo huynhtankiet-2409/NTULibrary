@@ -1,0 +1,43 @@
+﻿@model ProjectCK_65131559.Models.TaiLieuYeuThich
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Areas/Admin_65131559/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>TaiLieuYeuThich</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.NgayThem)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NgayThem)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NguoiDung.TenDangNhap)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NguoiDung.TenDangNhap)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TaiLieu.TenTaiLieu)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TaiLieu.TenTaiLieu)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

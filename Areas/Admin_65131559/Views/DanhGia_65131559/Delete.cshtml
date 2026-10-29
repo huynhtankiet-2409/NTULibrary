@@ -1,0 +1,66 @@
+﻿@model ProjectCK_65131559.Models.DanhGia
+
+@{
+    ViewBag.Title = "Xóa Đánh giá";
+    Layout = "~/Areas/Admin_65131559/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="max-w-xl mx-auto mt-12">
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+        <!-- Warning Header -->
+        <div class="bg-red-50 p-6 text-center border-b border-red-100">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4 animate-pulse">
+                <i class="fas fa-trash-alt text-3xl text-red-600"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Xác nhận xóa</h2>
+            <p class="text-red-600 font-medium">Bạn có chắc chắn muốn xóa đánh giá này?</p>
+            <p class="text-xs text-gray-500 mt-2">Hành động này không thể hoàn tác!</p>
+        </div>
+
+        <div class="p-8">
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-8 space-y-3">
+                <div class="flex items-start">
+                    <span class="text-gray-500 text-xs font-bold uppercase w-24 flex-shrink-0 mt-1">Tài liệu:</span>
+                    <span class="text-gray-900 font-bold">@Model.TaiLieu.TenTaiLieu</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="text-gray-500 text-xs font-bold uppercase w-24 flex-shrink-0">Người dùng:</span>
+                    <span class="text-gray-800 font-medium">@Model.NguoiDung.TenDangNhap</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="text-gray-500 text-xs font-bold uppercase w-24 flex-shrink-0">Điểm sao:</span>
+                    <div class="text-yellow-500">
+                        @for (int i = 0; i < Model.DiemSao; i++)
+                        {
+                            <i class="fas fa-star"></i>
+                        }
+                        <span class="text-gray-500 text-sm ml-2">(@Model.DiemSao/5)</span>
+                    </div>
+                </div>
+                <div>
+                    <span class="text-gray-500 text-xs font-bold uppercase block mb-1">Bình luận:</span>
+                    <p class="text-gray-600 text-sm italic bg-white p-2 rounded border border-gray-100">
+                        "@Model.BinhLuan"
+                    </p>
+                </div>
+                <div class="flex items-center pt-2 border-t border-gray-200">
+                    <span class="text-gray-500 text-xs font-bold uppercase w-24 flex-shrink-0">Ngày đăng:</span>
+                    <span class="text-gray-600 text-sm">@String.Format("{0:dd/MM/yyyy HH:mm}", Model.NgayDang)</span>
+                </div>
+            </div>
+
+            @using (Html.BeginForm()) {
+                @Html.AntiForgeryToken()
+
+                <div class="flex items-center justify-center space-x-4">
+                    <a href="@Url.Action("Index")" class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors w-full text-center">
+                        <i class="fas fa-times mr-2"></i>Hủy bỏ
+                    </a>
+                    <button type="submit" class="px-6 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 shadow-md transition-transform transform hover:-translate-y-0.5 w-full">
+                        <i class="fas fa-trash-alt mr-2"></i>Xác nhận xóa
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>

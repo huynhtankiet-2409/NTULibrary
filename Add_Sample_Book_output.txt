@@ -1,0 +1,14 @@
+Changed database context to 'ThuVienDaiHocNhaTrang'.
+
+(1 rows affected)
+
+(1 rows affected)
+
+(1 rows affected)
+✅ Đã thêm cuốn sách thành công!
+📌 Mã tài liệu: 31
+📖 Tên: Ngủ ngon theo phương pháp Stanford
+ 
+⚠️ LƯU Ý: Link PDF hiện tại là file mẫu.
+   Bạn có thể tìm file PDF thực của cuốn sách này và cập nhật:
+   UPDATE TaiLieu SET DuongDanFile = 'link-pdf-thuc.pdf' WHERE MaTaiLieu = 31

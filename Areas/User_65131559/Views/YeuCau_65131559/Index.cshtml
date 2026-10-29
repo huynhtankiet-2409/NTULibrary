@@ -1,0 +1,98 @@
+@model IEnumerable<ProjectCK_65131559.Models.YeuCau>
+
+@{
+    ViewBag.Title = "Lịch sử Yêu cầu & Hỗ trợ";
+    Layout = "~/Areas/User_65131559/Views/Shared/_LayoutUser.cshtml";
+}
+
+<div class="max-w-5xl mx-auto">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+            <h2 class="text-3xl font-bold text-gray-900">Yêu cầu & Hỗ trợ</h2>
+            <p class="text-gray-500">Xem lại các yêu cầu bạn đã gửi và phản hồi từ thư viện.</p>
+        </div>
+        <a href="@Url.Action("Create")" class="inline-flex items-center px-6 py-3 bg-ntu-blue text-white rounded-xl font-bold hover:bg-ntu-dark transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+            <i class="fas fa-plus mr-2"></i> Gửi yêu cầu mới
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-sm mb-6 flex items-center animate-in fade-in slide-in-from-top-4 duration-500">
+            <i class="fas fa-check-circle mr-3 text-xl"></i>
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="bg-gray-50 border-b border-gray-100">
+                    <tr>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Ngày gửi</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Tiêu đề</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest text-center">Trạng thái</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest text-right">Chi tiết</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    @foreach (var item in Model)
+                    {
+                        var statusClass = "bg-gray-100 text-gray-600";
+                        var statusText = item.TrangThai;
+
+                        switch (item.TrangThai)
+                        {
+                            case "ChoXuLy":
+                                statusClass = "bg-amber-100 text-amber-700";
+                                statusText = "Chờ xử lý";
+                                break;
+                            case "DangXuLy":
+                                statusClass = "bg-blue-100 text-blue-700";
+                                statusText = "Đang xử lý";
+                                break;
+                            case "DaXong":
+                                statusClass = "bg-green-100 text-green-700";
+                                statusText = "Đã xong";
+                                break;
+                            case "TuChoi":
+                                statusClass = "bg-red-100 text-red-700";
+                                statusText = "Từ chối";
+                                break;
+                        }
+
+                        <tr class="hover:bg-gray-50/50 transition-colors">
+                            <td class="px-6 py-5 whitespace-nowrap text-sm text-gray-500">
+                                @(item.NgayGui.HasValue ? item.NgayGui.Value.ToString("dd/MM/yyyy HH:mm") : "N/A")
+                            </td>
+                            <td class="px-6 py-5">
+                                <p class="text-sm font-bold text-gray-800 line-clamp-1">@item.TieuDe</p>
+                            </td>
+                            <td class="px-6 py-5 text-center">
+                                <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider @statusClass">
+                                    @statusText
+                                </span>
+                            </td>
+                            <td class="px-6 py-5 text-right">
+                                <a href="@Url.Action("Details", new { id = item.MaYeuCau })" class="inline-flex items-center px-3 py-1 bg-white border border-gray-200 text-ntu-blue rounded-lg hover:bg-ntu-blue hover:text-white hover:border-ntu-blue transition-all text-xs font-bold">
+                                    <i class="fas fa-eye mr-1.5"></i> Xem
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="4" class="px-6 py-16 text-center text-gray-400 italic">
+                                <div class="flex flex-col items-center">
+                                    <i class="fas fa-paper-plane text-5xl mb-4 opacity-20"></i>
+                                    <p>Bạn chưa gửi yêu cầu nào. Hãy bắt đầu bằng cách gửi yêu cầu mới!</p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

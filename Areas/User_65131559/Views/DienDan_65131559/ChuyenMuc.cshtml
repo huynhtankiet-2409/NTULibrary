@@ -1,0 +1,103 @@
+@model IEnumerable<ProjectCK_65131559.Models.DienDan_BaiViet>
+@{
+    var category = ViewBag.Category as ProjectCK_65131559.Models.DienDan_ChuyenMuc;
+    ViewBag.Title = category.TenChuyenMuc;
+    Layout = "~/Areas/User_65131559/Views/Shared/_LayoutUser.cshtml";
+}
+
+<div class="container mx-auto max-w-5xl">
+    <!-- Breadcrumb -->
+    <nav class="flex text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
+        <a href="@Url.Action("Index")" class="hover:text-ntu-blue">Diễn đàn</a>
+        <i class="fas fa-chevron-right mx-2 text-xs self-center"></i>
+        <span class="text-gray-800 font-medium">@category.TenChuyenMuc</span>
+    </nav>
+
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-ntu-blue to-blue-700 px-8 py-10 text-white relative overflow-hidden">
+            <div class="relative z-10">
+                <h1 class="text-3xl font-extrabold mb-2 uppercase tracking-tight">@category.TenChuyenMuc</h1>
+                <p class="text-blue-100 max-w-2xl text-sm leading-relaxed">@category.MoTa</p>
+            </div>
+            <!-- Decorative Icon -->
+            <div class="absolute right-8 top-1/2 -translate-y-1/2 opacity-10 text-9xl">
+                <i class="fas fa-bullhorn rotate-12"></i>
+            </div>
+        </div>
+
+        <div class="p-4 md:p-8">
+            <div class="flex justify-between items-center mb-8">
+                <div class="flex items-center text-sm font-bold text-gray-500 bg-gray-50 px-4 py-2 rounded-full border border-gray-100">
+                   <i class="fas fa-list-ul mr-2 text-ntu-blue"></i> @Model.Count() Chủ đề thảo luận
+                </div>
+                <a href="@Url.Action("Create", new { categoryId = category.MaChuyenMuc })" class="bg-ntu-blue text-white px-6 py-2.5 rounded-xl font-bold hover:shadow-lg transition-all transform hover:-translate-y-0.5 active:scale-95 flex items-center">
+                    <i class="fas fa-pen-fancy mr-2"></i> Bắt đầu thảo luận
+                </a>
+            </div>
+
+            <!-- Posts Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="text-xs font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100">
+                        <tr>
+                            <th class="px-4 py-3 pb-4">Tên chủ đề</th>
+                            <th class="px-4 py-3 pb-4 text-center">Người đăng</th>
+                            <th class="px-4 py-3 pb-4 text-center">Hoạt động</th>
+                            <th class="px-4 py-3 pb-4 text-right">Thống kê</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        @foreach (var post in Model)
+                        {
+                            <tr class="group hover:bg-blue-50/50 transition-colors">
+                                <td class="px-4 py-6">
+                                    <div class="flex items-start">
+                                        @if(post.LaGhim == true) {
+                                            <i class="fas fa-thumbtack text-red-500 text-sm mt-1 mr-3 group-hover:scale-110 transition-transform shadow-md" title="Thông báo quan trọng"></i>
+                                        }
+                                        <div>
+                                            <a href="@Url.Action("BaiViet", new { id = post.MaBaiViet })" class="text-base font-bold text-gray-800 hover:text-ntu-blue transition-colors line-clamp-1">@post.TieuDe</a>
+                                            @if (post.TrangThai == "BiKhoa") {
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-800 ml-2">
+                                                    <i class="fas fa-lock mr-1"></i> Locked
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-6 text-center">
+                                    <div class="flex flex-col items-center">
+                                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-ntu-blue font-bold text-xs ring-2 ring-white shadow-sm mb-1">
+                                            @(post.NguoiDung.HoTen != null && post.NguoiDung.HoTen.Length > 0 ? post.NguoiDung.HoTen.Substring(0, 1).ToUpper() : "?")
+                                        </div>
+                                        <span class="text-xs font-medium text-gray-700">@post.NguoiDung.HoTen</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-6 text-center">
+                                    <span class="text-xs text-gray-500">@(post.NgayDang.HasValue ? post.NgayDang.Value.ToString("dd/MM/yyyy") : "---")</span>
+                                </td>
+                                <td class="px-4 py-6 text-right whitespace-nowrap">
+                                    <div class="inline-flex items-center gap-4 text-xs font-bold text-gray-400">
+                                        <span class="flex items-center"><i class="far fa-eye mr-1 text-blue-300"></i> @(post.LuotXem ?? 0)</span>
+                                        <span class="flex items-center"><i class="far fa-comments mr-1 text-indigo-300"></i> @(post.DienDan_BinhLuan != null ? post.DienDan_BinhLuan.Count() : 0)</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <div class="text-center py-20">
+                    <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-dashed border-gray-200">
+                        <i class="fas fa-comment-slash text-gray-300 text-4xl"></i>
+                    </div>
+                    <p class="text-gray-500 font-medium">Chưa có chủ đề nào trong chuyên mục này.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

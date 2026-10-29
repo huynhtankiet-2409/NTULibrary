@@ -1,0 +1,61 @@
+﻿@model ProjectCK_65131559.Models.TaiLieu
+
+@{
+    ViewBag.Title = "Xóa tài liệu";
+    Layout = "~/Areas/Admin_65131559/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="max-w-2xl mx-auto mt-10">
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <!-- Warning Header -->
+        <div class="bg-red-50 p-6 text-center border-b border-red-100">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4 animate-pulse">
+                <i class="fas fa-trash-alt text-3xl text-red-600"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Xác nhận xóa tài liệu</h2>
+            <p class="text-red-600 font-medium">Hành động này không thể hoàn tác!</p>
+        </div>
+
+        <div class="p-8">
+            <p class="text-gray-600 text-center mb-8">
+                Bạn có chắc chắn muốn xóa tài liệu này khỏi hệ thống không?
+            </p>
+
+            <!-- Document Preview Card -->
+            <div class="flex items-start p-4 bg-gray-50 rounded-lg border border-gray-200 mb-8">
+                <div class="h-20 w-14 flex-shrink-0 bg-gray-200 rounded flex items-center justify-center overflow-hidden">
+                    @if (!string.IsNullOrEmpty(Model.AnhBia))
+                    {
+                        <img src="@Model.AnhBia" alt="Cover" class="h-full w-full object-cover">
+                    }
+                    else
+                    {
+                        <i class="fas fa-book text-gray-400"></i>
+                    }
+                </div>
+                <div class="ml-4">
+                    <h3 class="text-lg font-bold text-gray-900 line-clamp-1">@Model.TenTaiLieu</h3>
+                    <div class="text-sm text-gray-500 mt-1">
+                        @if (!string.IsNullOrEmpty(Model.ISBN))
+                        {
+                            <span class="mr-3"><i class="fas fa-barcode mr-1"></i> @Model.ISBN</span>
+                        }
+                        <span><i class="fas fa-folder mr-1"></i> @(Model.DanhMucCon != null ? Model.DanhMucCon.TenDanhMucCon : "---")</span>
+                    </div>
+                </div>
+            </div>
+
+            @using (Html.BeginForm()) {
+                @Html.AntiForgeryToken()
+                <div class="flex items-center justify-center space-x-4">
+                    <a href="@Url.Action("Index")" class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors w-full text-center">
+                        <i class="fas fa-times mr-2"></i>Hủy bỏ
+                    </a>
+                    <button type="submit" class="px-6 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 shadow-md transition-transform transform hover:-translate-y-0.5 w-full">
+                        <i class="fas fa-trash-alt mr-2"></i>Xác nhận xóa
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>

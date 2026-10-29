@@ -1,0 +1,241 @@
+@model ProjectCK_65131559.Models.TaiLieu
+
+@{
+    ViewBag.Title = "Quản lý Tác Giả";
+    Layout = "~/Areas/Admin_65131559/Views/Shared/_LayoutAdmin.cshtml";
+    var allAuthors = ViewBag.AllAuthors as List<ProjectCK_65131559.Models.TacGia>;
+    var currentAuthorIds = Model.TacGias != null ? Model.TacGias.Select(a => a.MaTacGia).ToList() : new List<int>();
+}
+
+<div class="max-w-6xl mx-auto space-y-6">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+            <i class="fas fa-user-friends text-purple-600 mr-3"></i>
+            Quản lý Tác Giả
+        </h2>
+        <p class="text-gray-600 mt-2">Gán tác giả cho tài liệu: <strong>@Model.TenTaiLieu</strong></p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Document Info Panel (Left) -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-lg shadow-md p-6 sticky top-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b">
+                    <i class="fas fa-book text-blue-500 mr-2"></i>
+                    Thông tin tài liệu
+                </h3>
+
+                <!-- Cover Image -->
+                <div class="mb-4 text-center">
+                    @if (!string.IsNullOrEmpty(Model.AnhBia))
+                    {
+                        <img class="h-48 w-32 object-cover rounded shadow-lg mx-auto" src="@Model.AnhBia" alt="Cover">
+                    }
+                    else
+                    {
+                        <div class="h-48 w-32 bg-gradient-to-br from-blue-100 to-indigo-200 rounded flex items-center justify-center mx-auto shadow-lg">
+                            <i class="fas fa-book text-blue-400 text-5xl"></i>
+                        </div>
+                    }
+                </div>
+
+                <!-- Document Details -->
+                <div class="space-y-3 text-sm">
+                    <div>
+                        <span class="text-gray-600 font-medium">Tên:</span>
+                        <p class="text-gray-900 mt-1">@Model.TenTaiLieu</p>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.ISBN))
+                    {
+                        <div>
+                            <span class="text-gray-600 font-medium">ISBN:</span>
+                            <p class="text-gray-900 mt-1">@Model.ISBN</p>
+                        </div>
+                    }
+
+                    @if (Model.DanhMucCon != null)
+                    {
+                        <div>
+                            <span class="text-gray-600 font-medium">Danh mục:</span>
+                            <p class="text-gray-900 mt-1">@Model.DanhMucCon.TenDanhMucCon</p>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.DinhDang))
+                    {
+                        <div>
+                            <span class="text-gray-600 font-medium">Định dạng:</span>
+                            <p class="text-gray-900 mt-1">
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-semibold">
+                                    @Model.DinhDang.ToUpper()
+                                </span>
+                            </p>
+                        </div>
+                    }
+                </div>
+
+                <!-- Current Author Count -->
+                <div class="mt-6 pt-4 border-t">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-purple-600">@currentAuthorIds.Count</div>
+                        <div class="text-sm text-gray-600 mt-1">tác giả hiện tại</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Author Selection Panel (Right) -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                @using (Html.BeginForm("ManageAuthors", "TaiLieu_65131559", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.Hidden("id", Model.MaTaiLieu)
+
+                    <!-- Search Box -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-search mr-1"></i>
+                            Tìm kiếm tác giả
+                        </label>
+                        <input type="text" id="authorSearch" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" 
+                               placeholder="Nhập tên tác giả để tìm kiếm...">
+                    </div>
+
+                    <div class="mb-4">
+                        @if (Model.TacGias != null && Model.TacGias.Any())
+                        {
+                        <div class="mb-6 pb-6 border-b">
+                            <h4 class="text-md font-semibold text-gray-800 mb-3">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                Tác giả đã gán (@Model.TacGias.Count())
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                @foreach (var author in Model.TacGias)
+                                {
+                                    <div class="flex items-center p-3 bg-green-50 border-2 border-green-200 rounded-lg">
+                                        <div class="flex-shrink-0">
+                                            <div class="h-10 w-10 rounded-full bg-green-500 flex items-center justify-center text-white font-bold">
+                                                @author.HoTen.Substring(0, 1).ToUpper()
+                                            </div>
+                                        </div>
+                                        <div class="ml-3 flex-1">
+                                            <p class="text-sm font-medium text-gray-900">@author.HoTen</p>
+                                            @if (!string.IsNullOrEmpty(author.GioiThieu))
+                                            {
+                                                <p class="text-xs text-gray-600">@author.GioiThieu</p>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                    </div>
+
+                    <!-- Available Authors -->
+                    <div>
+                        <h4 class="text-md font-semibold text-gray-800 mb-3">
+                            <i class="fas fa-users text-gray-600 mr-2"></i>
+                            Chọn tác giả (@(allAuthors != null ? allAuthors.Count : 0) tác giả có sẵn)
+                        </h4>
+
+                        <div>
+                            @if (allAuthors != null && allAuthors.Any())
+                            {
+                            <div id="authorList" class="space-y-2 max-h-96 overflow-y-auto pr-2">
+                                @foreach (var author in allAuthors.OrderBy(a => a.HoTen))
+                                {
+                                    var isSelected = currentAuthorIds.Contains(author.MaTacGia);
+                                    <label class="author-item flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors @(isSelected ? "bg-purple-50 border-purple-300" : "border-gray-200")"
+                                           data-author-name="@author.HoTen.ToLower()">
+                                        <input type="checkbox" 
+                                               name="selectedAuthors" 
+                                               value="@author.MaTacGia" 
+                                               @(isSelected ? "checked" : "")
+                                               class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500">
+                                        <div class="ml-3 flex-1">
+                                            <div class="flex items-center">
+                                                <div class="h-10 w-10 rounded-full bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center text-white font-bold mr-3">
+                                                    @author.HoTen.Substring(0, 1).ToUpper()
+                                                </div>
+                                                <div>
+                                                    <p class="text-sm font-medium text-gray-900">@author.HoTen</p>
+                                                    @if (!string.IsNullOrEmpty(author.GioiThieu))
+                                                    {
+                                                        <p class="text-xs text-gray-600">
+                                                            <i class="fas fa-info-circle text-gray-400 mr-1"></i>@author.GioiThieu
+                                                        </p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                }
+                            </div>
+
+                            <!-- Selected Count -->
+                            <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+                                <p class="text-sm text-blue-700">
+                                    <i class="fas fa-info-circle mr-2"></i>
+                                    Đã chọn: <strong id="selectedCount">@currentAuthorIds.Count</strong> tác giả
+                                </p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-8 text-gray-500">
+                                <i class="fas fa-user-slash text-4xl mb-3"></i>
+                                <p>Chưa có tác giả nào trong hệ thống</p>
+                            </div>
+                        }
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex items-center justify-between mt-6 pt-6 border-t">
+                        <a href="@Url.Action("Edit", new { id = Model.MaTaiLieu })" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>Quay lại
+                        </a>
+                        <button type="submit" class="px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all shadow-md">
+                            <i class="fas fa-save mr-2"></i>Lưu thay đổi
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Search functionality
+    document.getElementById('authorSearch').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const authorItems = document.querySelectorAll('.author-item');
+        
+        authorItems.forEach(item => {
+            const authorName = item.getAttribute('data-author-name');
+            if (authorName.includes(searchTerm)) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+
+    // Update selected count
+    const checkboxes = document.querySelectorAll('input[name="selectedAuthors"]');
+    const selectedCountEl = document.getElementById('selectedCount');
+    
+    function updateCount() {
+        const count = document.querySelectorAll('input[name="selectedAuthors"]:checked').length;
+        selectedCountEl.textContent = count;
+    }
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateCount);
+    });
+</script>

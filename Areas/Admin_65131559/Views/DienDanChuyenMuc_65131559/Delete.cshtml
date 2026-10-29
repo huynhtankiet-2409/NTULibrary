@@ -1,0 +1,63 @@
+@model ProjectCK_65131559.Models.DienDan_ChuyenMuc
+
+@{
+    ViewBag.Title = "Xác nhận xóa Chuyên mục";
+    Layout = "~/Areas/Admin_65131559/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="max-w-xl mx-auto mt-10">
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-red-100">
+        <div class="bg-red-50 p-6 text-center border-b border-red-100">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
+                <i class="fas fa-exclamation-triangle text-3xl text-red-600"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Xác nhận xóa Chuyên mục</h2>
+            <p class="text-red-700 font-medium italic">Việc xóa chuyên mục có thể ảnh hưởng đến cấu trúc diễn đàn!</p>
+        </div>
+
+        <div class="p-8">
+            <div class="bg-gray-50 rounded-lg p-6 mb-8 border border-gray-200">
+                <div class="space-y-4 text-sm">
+                    <div class="flex">
+                        <span class="w-32 font-semibold text-gray-600">Tên Box:</span>
+                        <span class="text-gray-900 font-bold">@Model.TenChuyenMuc</span>
+                    </div>
+                    <div class="flex">
+                        <span class="w-32 font-semibold text-gray-600">Mô tả:</span>
+                        <span class="text-gray-900 italic">@Model.MoTa</span>
+                    </div>
+                    <div class="flex">
+                        <span class="w-32 font-semibold text-gray-600">Số bài viết:</span>
+                        <span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full font-bold">
+                             @(Model.DienDan_BaiViet != null ? Model.DienDan_BaiViet.Count() : 0) bài viết
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            @if (ViewData.ModelState.ContainsKey("") && ViewData.ModelState[""].Errors.Any())
+            {
+                <div class="p-4 mb-6 text-sm text-red-800 rounded-lg bg-red-50 border border-red-200" role="alert">
+                    @Html.ValidationSummary(true, "", new { @class = "list-disc pl-5" })
+                </div>
+            }
+
+            <p class="text-center text-gray-600 mb-8 px-4">
+                Bạn có chắc chắn muốn xóa chuyên mục này không? Thao tác này sẽ thất bại nếu chuyên mục vẫn chứa bài viết.
+            </p>
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                <div class="flex items-center justify-center space-x-4">
+                    <a href="@Url.Action("Index")" class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors w-full text-center">
+                        <i class="fas fa-times mr-2"></i>Hủy bỏ
+                    </a>
+                    <button type="submit" class="px-6 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 shadow-md transition-all active:scale-95 w-full">
+                        <i class="fas fa-trash-alt mr-2"></i>Xác nhận xóa
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
